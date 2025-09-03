@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  logoUrl     String?
+  products    Product[]
+  catalogues  Catalogue[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Catalogue {
+  id        Int       @id @default(autoincrement())
+  title     String
+  fileUrl   String?   // PDF link
+  brandId   Int
+  brand     Brand     @relation(fields: [brandId], references: [id])
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Category {
+  id            Int             @id @default(autoincrement())
+  name          String
+  slug          String          @unique
+  parentId      Int?
+  parent        Category?       @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  subcategories Category[]      @relation("CategoryHierarchy")
+  products      Product[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  name        String
+  reference   String?    // e.g. "4130", "Q65 SN"
+  description String?
+  material    String?
+  dimensions  String?
+  finish      String?
+  accessories String?
+  imageUrl    String?
+  brandId     Int
+  brand       Brand      @relation(fields: [brandId], references: [id])
+  catalogueId Int?
+  catalogue   Catalogue? @relation(fields: [catalogueId], references: [id])
+  categoryId  Int?
+  category    Category?  @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
