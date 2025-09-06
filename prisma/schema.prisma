@@ -15,20 +15,20 @@ datasource db {
 }
 
 model Brand {
-  id          Int          @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   description String?
   logoUrl     String?
   products    Product[]
   catalogues  Catalogue[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Catalogue {
   id        Int       @id @default(autoincrement())
   title     String
-  fileUrl   String?   // PDF link
+  fileUrl   String? // PDF link
   brandId   Int
   brand     Brand     @relation(fields: [brandId], references: [id])
   products  Product[]
@@ -37,21 +37,21 @@ model Catalogue {
 }
 
 model Category {
-  id            Int             @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   name          String
-  slug          String          @unique
+  slug          String     @unique
   parentId      Int?
-  parent        Category?       @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  subcategories Category[]      @relation("CategoryHierarchy")
+  parent        Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  subcategories Category[] @relation("CategoryHierarchy")
   products      Product[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Product {
   id          Int        @id @default(autoincrement())
   name        String
-  reference   String?    // e.g. "4130", "Q65 SN"
+  reference   String? // e.g. "4130", "Q65 SN"
   description String?
   material    String?
   dimensions  String?
@@ -66,4 +66,65 @@ model Product {
   category    Category?  @relation(fields: [categoryId], references: [id])
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  data        Json
+}
+
+model User {
+  id            String    @id
+  name          String    @db.Text
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String   @db.Text
+  value      String   @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
 }
