@@ -3,7 +3,13 @@
 import { prisma } from "@/lib/prismacl";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { Product, Brand, Category, Catalogue, ImageUrl } from "@/generated/prisma";
+import {
+  Product,
+  Brand,
+  Category,
+  Catalogue,
+  ImageUrl,
+} from "@/generated/prisma";
 import { ProductSchemaType } from "@/lib/Schema";
 
 // Type for product with relations
@@ -225,17 +231,8 @@ export async function createProductWithSchema(data: ProductSchemaType) {
       },
     });
 
-    // Create image URL if provided
-    if (data.imageUrl && data.imageUrl.trim()) {
-      await prisma.imageUrl.create({
-        data: {
-          url: data.imageUrl.trim(),
-          productId: product.id,
-        },
-      });
-    }
-
     revalidatePath("/admin/products");
+    return product; // Return the product so caller can get the ID
   } catch (error) {
     if (error instanceof Error) {
       throw error;
@@ -272,26 +269,8 @@ export async function updateProductWithSchema(
       },
     });
 
-    // Handle image URL update
-    if (data.imageUrl && data.imageUrl.trim()) {
-      // Delete existing image URLs
-      await prisma.imageUrl.deleteMany({
-        where: { productId: id },
-      });
-      
-      // Create new image URL
-      await prisma.imageUrl.create({
-        data: {
-          url: data.imageUrl.trim(),
-          productId: id,
-        },
-      });
-    } else {
-      // If no image URL provided, delete existing ones
-      await prisma.imageUrl.deleteMany({
-        where: { productId: id },
-      });
-    }
+    // Note: Images are now handled separately through the addImageUrl and deleteImageUrl functions
+    // This allows for better individual image management
 
     revalidatePath("/admin/products");
   } catch (error) {
@@ -349,7 +328,7 @@ export async function updateProduct(id: number, formData: FormData) {
       await prisma.imageUrl.deleteMany({
         where: { productId: id },
       });
-      
+
       // Create new image URL
       await prisma.imageUrl.create({
         data: {
@@ -410,3 +389,41 @@ export const getProductCount = async (): Promise<number> => {
     return 0;
   }
 };
+
+// Delete a single image URL
+export async function deleteImageUrl(imageId: number) {
+  try {
+    await prisma.imageUrl.delete({
+      where: { id: imageId },
+    });
+
+    revalidatePath("/admin/products");
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    console.error("Failed to delete image:", error);
+    throw new Error("Failed to delete image");
+  }
+}
+
+// Add a new image URL to a product
+export async function addImageUrl(productId: number, imageUrl: string) {
+  try {
+    const newImage = await prisma.imageUrl.create({
+      data: {
+        url: imageUrl,
+        productId: productId,
+      },
+    });
+
+    revalidatePath("/admin/products");
+    return newImage;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    console.error("Failed to add image:", error);
+    throw new Error("Failed to add image");
+  }
+}

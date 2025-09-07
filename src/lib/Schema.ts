@@ -34,7 +34,6 @@ export type BrandSchemaType = z.infer<typeof BrandSchema>;
 export const ProductSchema = z.object({
   name: z.string().min(2, "Product name must be at least 2 characters long"),
   description: z.string().optional(),
-  imageUrl: z.string().optional(),
   brandId: z.string().min(1, "Brand is required"),
   categoryId: z.string().optional(),
   catalogueId: z.string().optional(),

@@ -8,6 +8,7 @@ import {
   getBrandsForDropdown,
   getCategoriesForDropdown,
   getCataloguesForDropdown,
+  addImageUrl,
 } from "@/lib/actions/products";
 import { useForm } from "react-hook-form";
 import { ProductSchema, ProductSchemaType } from "@/lib/Schema";
@@ -25,7 +26,7 @@ import { Brand, Category, Catalogue } from "@/generated/prisma";
 const CreateProductPage = () => {
   const router = useRouter();
   const uploaderRef = useRef<UploaderRef>(null);
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]); // Changed to array
   const [loading, setLoading] = React.useState(true);
   const [brands, setBrands] = React.useState<Brand[]>([]);
   const [categories, setCategories] = React.useState<Category[]>([]);
@@ -40,7 +41,6 @@ const CreateProductPage = () => {
     defaultValues: {
       name: "",
       description: "",
-      imageUrl: undefined,
       brandId: "",
       categoryId: "",
       catalogueId: "",
@@ -72,21 +72,24 @@ const CreateProductPage = () => {
 
   const onSubmit = async (data: ProductSchemaType) => {
     try {
-      let imageUrl = "";
+      // Create the product first
+      const product = await createProductWithSchema(data);
 
-      // Upload the file if one is selected
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        imageUrl = await uploadFile(formData);
+      // Upload and associate any selected files with the new product
+      if (selectedFiles && selectedFiles.length > 0) {
+        for (const file of selectedFiles) {
+          try {
+            const formData = new FormData();
+            formData.append("file", file);
+            const imageUrl = await uploadFile(formData);
+            await addImageUrl(product.id, imageUrl);
+          } catch (error) {
+            console.error("Failed to upload image:", error);
+            // Continue with other images even if one fails
+          }
+        }
       }
 
-      const finalData = {
-        ...data,
-        imageUrl,
-      };
-
-      await createProductWithSchema(finalData);
       toast.success("Product created successfully!");
       router.push("/admin/products");
     } catch (err) {
@@ -95,8 +98,8 @@ const CreateProductPage = () => {
     }
   };
 
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
+  const handleFilesSelect = (files: File[]) => {
+    setSelectedFiles(files);
   };
 
   if (loading) {
@@ -280,7 +283,7 @@ const CreateProductPage = () => {
             <Uploader
               multiple
               ref={uploaderRef}
-              onFileSelect={handleFileSelect}
+              onFilesSelect={handleFilesSelect}
             />
 
             {/* Form Actions */}

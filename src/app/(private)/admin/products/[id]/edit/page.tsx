@@ -3,12 +3,15 @@
 import React, { useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   getProduct,
   updateProductWithSchema,
   getBrandsForDropdown,
   getCategoriesForDropdown,
   getCataloguesForDropdown,
+  deleteImageUrl,
+  addImageUrl,
 } from "@/lib/actions/products";
 import { useForm } from "react-hook-form";
 import { ProductSchema, ProductSchemaType } from "@/lib/Schema";
@@ -34,7 +37,6 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
   const router = useRouter();
   const uploaderRef = useRef<UploaderRef>(null);
   const [loading, setLoading] = React.useState(true);
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [brands, setBrands] = React.useState<Brand[]>([]);
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [catalogues, setCatalogues] = React.useState<Catalogue[]>([]);
@@ -95,7 +97,6 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
         reset({
           name: productData.name,
           description: productData.description || "",
-          imageUrl: productData.imageUrls && productData.imageUrls.length > 0 ? productData.imageUrls[0].url : undefined,
           brandId: productData.brandId.toString(),
           categoryId: productData.categoryId?.toString() || "",
           catalogueId: productData.catalogueId?.toString() || "",
@@ -113,20 +114,8 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
 
   const onSubmit = async (data: ProductSchemaType) => {
     try {
-      let imageUrl = data.imageUrl;
-
-      // Upload the file if one is selected
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        imageUrl = await uploadFile(formData);
-      }
-
-      const finalData = {
-        ...data,
-        imageUrl,
-      };
-      await updateProductWithSchema(id, finalData);
+      // Update product data (images are handled separately)
+      await updateProductWithSchema(id, data);
       toast.success("Product updated successfully!");
       router.push("/admin/products");
     } catch (err) {
@@ -135,8 +124,74 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
     }
   };
 
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
+  const handleFileSelect = async (file: File) => {
+    try {
+      // Automatically upload and add the image
+      const formData = new FormData();
+      formData.append("file", file);
+      const imageUrl = await uploadFile(formData);
+
+      await handleAddImage(imageUrl);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image.");
+    }
+  };
+
+  const handleFilesSelect = async (files: File[]) => {
+    try {
+      // Upload and add multiple images
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const imageUrl = await uploadFile(formData);
+        await handleAddImage(imageUrl);
+      }
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      toast.error("Failed to upload images.");
+    }
+  };
+
+  const handleRemoveImage = async (imageId: number) => {
+    try {
+      await deleteImageUrl(imageId);
+
+      // Update local state
+      if (currentProduct) {
+        const updatedProduct = {
+          ...currentProduct,
+          imageUrls:
+            currentProduct.imageUrls?.filter((img) => img.id !== imageId) || [],
+        };
+        setCurrentProduct(updatedProduct);
+      }
+
+      toast.success("Image removed successfully!");
+    } catch (error) {
+      console.error("Error removing image:", error);
+      toast.error("Failed to remove image.");
+    }
+  };
+
+  const handleAddImage = async (imageUrl: string) => {
+    try {
+      if (currentProduct) {
+        const newImage = await addImageUrl(currentProduct.id, imageUrl);
+
+        // Update local state
+        const updatedProduct = {
+          ...currentProduct,
+          imageUrls: [...(currentProduct.imageUrls || []), newImage],
+        };
+        setCurrentProduct(updatedProduct);
+
+        toast.success("Image added successfully!");
+      }
+    } catch (error) {
+      console.error("Error adding image:", error);
+      toast.error("Failed to add image.");
+    }
   };
 
   if (loading) {
@@ -314,12 +369,65 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
               </div>
             </div>
 
-            {/* Image Upload */}
-            <Uploader
-              ref={uploaderRef}
-              onFileSelect={handleFileSelect}
-              initialImageUrl={currentProduct?.imageUrls && currentProduct.imageUrls.length > 0 ? currentProduct.imageUrls[0].url : undefined}
-            />
+            {/* Image Management Section */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">
+                Product Images
+              </Label>
+
+              {/* Existing Images Display */}
+              {currentProduct?.imageUrls &&
+                currentProduct.imageUrls.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-gray-600">
+                      Current Images
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {currentProduct.imageUrls.map((imageUrl, index) => (
+                        <div key={imageUrl.id} className="relative group">
+                          <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <Image
+                              src={imageUrl.url}
+                              alt={`Product image ${index + 1}`}
+                              width={200}
+                              height={200}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleRemoveImage(imageUrl.id)}
+                              className="text-xs"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                          {index === 0 && (
+                            <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                              Primary
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              {/* Add New Image */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                <h4 className="text-sm font-medium text-gray-600 mb-2">
+                  Add New Images
+                </h4>
+                <Uploader
+                  multiple
+                  ref={uploaderRef}
+                  onFilesSelect={handleFilesSelect}
+                />
+              </div>
+            </div>
 
             {/* Form Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t">

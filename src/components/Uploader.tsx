@@ -17,6 +17,7 @@ import { useState, useImperativeHandle, forwardRef, useEffect } from "react";
 
 interface UploaderProps {
   onFileSelect?: (file: File) => void;
+  onFilesSelect?: (files: File[]) => void; // New prop for multiple files
   onUploadComplete?: (url: string) => void;
   multiple?: boolean;
   maxSizeMB?: number;
@@ -25,7 +26,9 @@ interface UploaderProps {
 
 export interface UploaderRef {
   uploadSelectedFile: () => Promise<string | null>;
+  uploadSelectedFiles: () => Promise<string[]>; // New method for multiple files
   getSelectedFile: () => File | null;
+  getSelectedFiles: () => File[]; // New method for multiple files
   clearSelectedFile: () => void;
   clearExistingImage: () => void;
 }
@@ -34,6 +37,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
   (
     {
       onFileSelect,
+      onFilesSelect,
       onUploadComplete,
       multiple = false,
       maxSizeMB = 5,
@@ -46,6 +50,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
       initialImageUrl || null
     );
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]); // New state for multiple files
     const maxSize = maxSizeMB * 1024 * 1024;
 
     const [
@@ -65,10 +70,18 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
       maxSize,
       multiple,
       onFilesAdded: (addedFiles) => {
-        if (addedFiles.length > 0) {
-          const file = addedFiles[0].file as File;
-          setSelectedFile(file);
-          onFileSelect?.(file);
+        if (multiple) {
+          // Handle multiple files
+          const files = addedFiles.map((f) => f.file as File);
+          setSelectedFiles(files);
+          onFilesSelect?.(files);
+        } else {
+          // Handle single file (existing behavior)
+          if (addedFiles.length > 0) {
+            const file = addedFiles[0].file as File;
+            setSelectedFile(file);
+            onFileSelect?.(file);
+          }
         }
       },
     });
@@ -100,19 +113,52 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
       }
     };
 
+    const handleUploadMultiple = async (files: File[]): Promise<string[]> => {
+      setUploading(true);
+      const urls: string[] = [];
+
+      try {
+        for (const file of files) {
+          const formData = new FormData();
+          formData.append("file", file);
+          const url = await uploadFile(formData);
+          urls.push(url);
+        }
+
+        toast.success(`${files.length} files uploaded successfully!`);
+        return urls;
+      } catch (error) {
+        console.error("Upload failed:", error);
+        toast.error(error instanceof Error ? error.message : "Upload failed");
+        throw error;
+      } finally {
+        setUploading(false);
+      }
+    };
+
     const handleRemoveFile = (fileId: string) => {
       removeFile(fileId);
-      setSelectedFile(null);
+      if (multiple) {
+        // Update selectedFiles array
+        const updatedFiles = files
+          .filter((f) => f.id !== fileId)
+          .map((f) => f.file as File);
+        setSelectedFiles(updatedFiles);
+      } else {
+        setSelectedFile(null);
+      }
     };
 
     const handleClearFiles = () => {
       clearFiles();
       setSelectedFile(null);
+      setSelectedFiles([]);
     };
 
     const handleClearExistingImage = () => {
       setUploadedUrl(null);
       setSelectedFile(null);
+      setSelectedFiles([]);
       clearFiles();
     };
 
@@ -124,7 +170,14 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
         }
         return null;
       },
+      uploadSelectedFiles: async () => {
+        if (selectedFiles.length > 0) {
+          return await handleUploadMultiple(selectedFiles);
+        }
+        return [];
+      },
       getSelectedFile: () => selectedFile,
+      getSelectedFiles: () => selectedFiles,
       clearSelectedFile: () => {
         handleClearFiles();
       },
@@ -212,10 +265,11 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
             ) : (
               <>
                 <p className="mb-1.5 text-sm font-medium">
-                  Drop your images here
+                  Drop your {multiple ? "images" : "image"} here
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
+                  SVG, PNG, JPG or GIF (max. {maxSizeMB}MB
+                  {multiple ? " each" : ""})
                 </p>
                 <Button
                   type="button"
@@ -225,7 +279,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
                   disabled={uploading}
                 >
                   <UploadIcon className="-ms-1 opacity-60" aria-hidden="true" />
-                  Select images
+                  Select {multiple ? "images" : "image"}
                 </Button>
               </>
             )}
@@ -296,7 +350,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
                 onClick={handleClearFiles}
                 disabled={uploading}
               >
-                Remove file
+                Remove {multiple && files.length > 1 ? "all files" : "file"}
               </Button>
             </div>
           </div>
