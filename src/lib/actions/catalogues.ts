@@ -111,8 +111,6 @@ export async function createCatalogue(formData: FormData) {
     console.error("Failed to create catalogue:", error);
     throw new Error("Failed to create catalogue");
   }
-
-  redirect("/admin/catalogues");
 }
 
 // Update a catalogue
@@ -150,6 +148,7 @@ export async function updateCatalogue(id: number, formData: FormData) {
     });
 
     revalidatePath("/admin/catalogues");
+    redirect("/admin/catalogues");
   } catch (error) {
     if (error instanceof Error) {
       throw error;
@@ -157,8 +156,6 @@ export async function updateCatalogue(id: number, formData: FormData) {
     console.error("Failed to update catalogue:", error);
     throw new Error("Failed to update catalogue");
   }
-
-  redirect("/admin/catalogues");
 }
 
 // Delete a catalogue
@@ -198,5 +195,16 @@ export async function deleteCatalogue(id: number) {
     }
     console.error("Failed to delete catalogue:", error);
     throw new Error("Failed to delete catalogue");
+  }
+}
+
+// Get catalogues count for dashboard
+export async function getCatalogueCount(): Promise<number> {
+  try {
+    const count = await prisma.catalogue.count();
+    return count;
+  } catch (error) {
+    console.error("Failed to get catalogue count:", error);
+    return 0;
   }
 }

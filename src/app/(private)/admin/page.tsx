@@ -2,6 +2,8 @@ import React from "react";
 import { Building2, Package, FolderOpen, Users } from "lucide-react";
 import { getBrandCount } from "@/lib/actions/brands";
 import { getProductCount } from "@/lib/actions/products";
+import { getCatalogueCount } from "@/lib/actions/catalogues";
+import { getCategoryCount } from "@/lib/actions/categories";
 
 const AdminDashboard = async () => {
   const stats = [
@@ -18,12 +20,18 @@ const AdminDashboard = async () => {
       color: "bg-green-500",
     },
     {
+      name: "Total Categories",
+      value: await getCategoryCount(),
+      icon: FolderOpen,
+      color: "bg-yellow-500",
+    },
+    {
       name: "Total Catalogues",
-      value: "300",
+      value: await getCatalogueCount(),
       icon: FolderOpen,
       color: "bg-purple-500",
     },
-    { name: "Total Users", value: "1", icon: Users, color: "bg-orange-500" },
+    // { name: "Total Users", value: "1", icon: Users, color: "bg-orange-500" },
   ];
 
   return (

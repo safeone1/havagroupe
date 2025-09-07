@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prismacl";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { Product, Brand, Category, Catalogue } from "@/generated/prisma";
+import { Product, Brand, Category, Catalogue, ImageUrl } from "@/generated/prisma";
 import { ProductSchemaType } from "@/lib/Schema";
 
 // Type for product with relations
@@ -11,6 +11,7 @@ export type ProductWithRelations = Product & {
   brand: Brand;
   category: Category | null;
   catalogue: Catalogue | null;
+  imageUrls: ImageUrl[];
 };
 
 // Get all brands (for dropdowns)
@@ -69,6 +70,7 @@ export async function getProducts(): Promise<ProductWithRelations[]> {
         brand: true,
         category: true,
         catalogue: true,
+        imageUrls: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -93,6 +95,7 @@ export async function getProduct(
         brand: true,
         category: true,
         catalogue: true,
+        imageUrls: true,
       },
     });
 
@@ -176,11 +179,10 @@ export async function createProduct(formData: FormData) {
   }
 
   try {
-    await prisma.product.create({
+    const product = await prisma.product.create({
       data: {
         name: name.trim(),
         description: description?.trim() || null,
-        imageUrl: imageUrl?.trim() || null,
         brandId: parseInt(brandId),
         categoryId: categoryId ? parseInt(categoryId) : null,
         catalogueId: catalogueId ? parseInt(catalogueId) : null,
@@ -188,7 +190,18 @@ export async function createProduct(formData: FormData) {
       },
     });
 
+    // Create image URL if provided
+    if (imageUrl && imageUrl.trim()) {
+      await prisma.imageUrl.create({
+        data: {
+          url: imageUrl.trim(),
+          productId: product.id,
+        },
+      });
+    }
+
     revalidatePath("/admin/products");
+    redirect("/admin/products");
   } catch (error) {
     if (error instanceof Error) {
       throw error;
@@ -196,24 +209,31 @@ export async function createProduct(formData: FormData) {
     console.error("Failed to create product:", error);
     throw new Error("Failed to create product");
   }
-
-  redirect("/admin/products");
 }
 
 // Create a product with schema validation
 export async function createProductWithSchema(data: ProductSchemaType) {
   try {
-    await prisma.product.create({
+    const product = await prisma.product.create({
       data: {
         name: data.name.trim(),
         description: data.description?.trim() || null,
-        imageUrl: data.imageUrl?.trim() || null,
         brandId: parseInt(data.brandId),
         categoryId: data.categoryId ? parseInt(data.categoryId) : null,
         catalogueId: data.catalogueId ? parseInt(data.catalogueId) : null,
         data: {},
       },
     });
+
+    // Create image URL if provided
+    if (data.imageUrl && data.imageUrl.trim()) {
+      await prisma.imageUrl.create({
+        data: {
+          url: data.imageUrl.trim(),
+          productId: product.id,
+        },
+      });
+    }
 
     revalidatePath("/admin/products");
   } catch (error) {
@@ -245,13 +265,33 @@ export async function updateProductWithSchema(
       data: {
         name: data.name.trim(),
         description: data.description?.trim() || null,
-        imageUrl: data.imageUrl?.trim() || null,
         brandId: parseInt(data.brandId),
         categoryId: data.categoryId ? parseInt(data.categoryId) : null,
         catalogueId: data.catalogueId ? parseInt(data.catalogueId) : null,
         data: {},
       },
     });
+
+    // Handle image URL update
+    if (data.imageUrl && data.imageUrl.trim()) {
+      // Delete existing image URLs
+      await prisma.imageUrl.deleteMany({
+        where: { productId: id },
+      });
+      
+      // Create new image URL
+      await prisma.imageUrl.create({
+        data: {
+          url: data.imageUrl.trim(),
+          productId: id,
+        },
+      });
+    } else {
+      // If no image URL provided, delete existing ones
+      await prisma.imageUrl.deleteMany({
+        where: { productId: id },
+      });
+    }
 
     revalidatePath("/admin/products");
   } catch (error) {
@@ -296,7 +336,6 @@ export async function updateProduct(id: number, formData: FormData) {
       data: {
         name: name.trim(),
         description: description?.trim() || null,
-        imageUrl: imageUrl?.trim() || null,
         brandId: parseInt(brandId),
         categoryId: categoryId ? parseInt(categoryId) : null,
         catalogueId: catalogueId ? parseInt(catalogueId) : null,
@@ -304,7 +343,29 @@ export async function updateProduct(id: number, formData: FormData) {
       },
     });
 
+    // Handle image URL update
+    if (imageUrl && imageUrl.trim()) {
+      // Delete existing image URLs
+      await prisma.imageUrl.deleteMany({
+        where: { productId: id },
+      });
+      
+      // Create new image URL
+      await prisma.imageUrl.create({
+        data: {
+          url: imageUrl.trim(),
+          productId: id,
+        },
+      });
+    } else {
+      // If no image URL provided, delete existing ones
+      await prisma.imageUrl.deleteMany({
+        where: { productId: id },
+      });
+    }
+
     revalidatePath("/admin/products");
+    redirect("/admin/products");
   } catch (error) {
     if (error instanceof Error) {
       throw error;
@@ -312,8 +373,6 @@ export async function updateProduct(id: number, formData: FormData) {
     console.error("Failed to update product:", error);
     throw new Error("Failed to update product");
   }
-
-  redirect("/admin/products");
 }
 
 // Delete a product

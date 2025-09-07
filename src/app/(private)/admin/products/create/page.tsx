@@ -277,7 +277,11 @@ const CreateProductPage = () => {
             </div>
 
             {/* Image Upload */}
-            <Uploader ref={uploaderRef} onFileSelect={handleFileSelect} />
+            <Uploader
+              multiple
+              ref={uploaderRef}
+              onFileSelect={handleFileSelect}
+            />
 
             {/* Form Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t">

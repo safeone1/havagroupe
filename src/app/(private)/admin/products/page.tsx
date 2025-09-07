@@ -90,10 +90,10 @@ const ProductsPage = async () => {
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      {product.imageUrl ? (
+                      {product.imageUrls && product.imageUrls.length > 0 ? (
                         <Image
                           className="h-10 w-10 rounded-lg object-cover mr-4"
-                          src={product.imageUrl}
+                          src={product.imageUrls[0].url}
                           alt={product.name}
                           width={40}
                           height={40}

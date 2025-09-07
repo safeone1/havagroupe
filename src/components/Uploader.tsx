@@ -18,6 +18,7 @@ import { useState, useImperativeHandle, forwardRef, useEffect } from "react";
 interface UploaderProps {
   onFileSelect?: (file: File) => void;
   onUploadComplete?: (url: string) => void;
+  multiple?: boolean;
   maxSizeMB?: number;
   initialImageUrl?: string; // URL of existing image to display
 }
@@ -34,6 +35,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
     {
       onFileSelect,
       onUploadComplete,
+      multiple = false,
       maxSizeMB = 5,
       initialImageUrl,
     }: UploaderProps,
@@ -61,7 +63,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
     ] = useFileUpload({
       accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif",
       maxSize,
-      multiple: false,
+      multiple,
       onFilesAdded: (addedFiles) => {
         if (addedFiles.length > 0) {
           const file = addedFiles[0].file as File;
@@ -168,6 +170,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
                 </a>
               </div>
               <Button
+                type="button"
                 size="sm"
                 variant="outline"
                 onClick={handleClearExistingImage}
@@ -215,6 +218,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
                   SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
                 </p>
                 <Button
+                  type="button"
                   variant="outline"
                   className="mt-4"
                   onClick={openFileDialog}

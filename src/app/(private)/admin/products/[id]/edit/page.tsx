@@ -42,7 +42,7 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
     id: number;
     name: string;
     description?: string | null;
-    imageUrl?: string | null;
+    imageUrls?: { id: number; url: string; productId: number }[];
     brandId: number;
     categoryId?: number | null;
     catalogueId?: number | null;
@@ -95,7 +95,7 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
         reset({
           name: productData.name,
           description: productData.description || "",
-          imageUrl: productData.imageUrl || undefined,
+          imageUrl: productData.imageUrls && productData.imageUrls.length > 0 ? productData.imageUrls[0].url : undefined,
           brandId: productData.brandId.toString(),
           categoryId: productData.categoryId?.toString() || "",
           catalogueId: productData.catalogueId?.toString() || "",
@@ -318,7 +318,7 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
             <Uploader
               ref={uploaderRef}
               onFileSelect={handleFileSelect}
-              initialImageUrl={currentProduct?.imageUrl || undefined}
+              initialImageUrl={currentProduct?.imageUrls && currentProduct.imageUrls.length > 0 ? currentProduct.imageUrls[0].url : undefined}
             />
 
             {/* Form Actions */}

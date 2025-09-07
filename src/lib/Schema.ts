@@ -48,3 +48,13 @@ export const CategorySchema = z.object({
 });
 
 export type CategorySchemaType = z.infer<typeof CategorySchema>;
+
+export const CatalogueSchema = z.object({
+  title: z
+    .string()
+    .min(2, "Catalogue title must be at least 2 characters long"),
+  fileUrl: z.string().optional(),
+  brandId: z.string().min(1, "Brand is required"),
+});
+
+export type CatalogueSchemaType = z.infer<typeof CatalogueSchema>;
