@@ -3,7 +3,7 @@ import { Plus, Edit, Building2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getBrands, type BrandWithCounts } from "@/lib/actions/brands";
-import DeleteBrandButton from "./components/DeleteBrandButton";
+import DeleteBrand from "./components/DeleteBrand";
 
 const BrandsPage = async () => {
   let brands: BrandWithCounts[] = [];
@@ -26,7 +26,7 @@ const BrandsPage = async () => {
   }
 
   return (
-    <div className="flex-1 p-8 bg-gray-50">
+    <div className="flex-1 p-8 bg-gray-50 overflow-y-scroll">
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -93,7 +93,7 @@ const BrandsPage = async () => {
                       {brand.logoUrl ? (
                         <Image
                           className="h-10 w-10 rounded-lg object-cover mr-4"
-                          src={brand.logoUrl}
+                          src={brand.logoUrl || "/placeholder.png"}
                           alt={brand.name}
                           width={40}
                           height={40}
@@ -128,11 +128,12 @@ const BrandsPage = async () => {
                     <div className="flex justify-end space-x-2">
                       <Link
                         href={`/admin/brands/${brand.id}/edit`}
-                        className="text-indigo-600 hover:text-indigo-900 p-2 hover:bg-indigo-50 rounded transition-colors"
+                        className="text-indigo-600 flex justify-center items-center hover:text-indigo-900 p-2 hover:bg-indigo-50 rounded transition-colors"
                       >
                         <Edit size={16} />
                       </Link>
-                      <DeleteBrandButton brandId={brand.id} />
+
+                      <DeleteBrand brandId={brand.id} />
                     </div>
                   </td>
                 </tr>

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prismacl";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Brand } from "@/generated/prisma";
+import { BrandSchema, BrandSchemaType } from "@/lib/Schema";
 
 // Type for brand with counts
 export type BrandWithCounts = Brand & {
@@ -60,21 +61,15 @@ export async function getBrand(id: number): Promise<BrandWithCounts | null> {
 }
 
 // Create a new brand
-export async function createBrand(formData: FormData) {
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string;
-  const logoUrl = formData.get("logoUrl") as string;
-
-  // Validation
-  if (!name || name.trim().length === 0) {
-    throw new Error("Brand name is required");
-  }
-
+export async function createBrand(data: BrandSchemaType) {
   try {
+    // Validate the data using Zod schema
+    const validatedData = BrandSchema.parse(data);
+
     // Check if brand name already exists
     const existingBrand = await prisma.brand.findFirst({
       where: {
-        name: name.trim(),
+        name: validatedData.name.trim(),
       },
     });
 
@@ -84,9 +79,9 @@ export async function createBrand(formData: FormData) {
 
     await prisma.brand.create({
       data: {
-        name: name.trim(),
-        description: description?.trim() || null,
-        logoUrl: logoUrl?.trim() || null,
+        name: validatedData.name.trim(),
+        description: validatedData.description?.trim() || null,
+        logoUrl: validatedData.logoUrl?.trim() || null,
       },
     });
 
@@ -98,22 +93,14 @@ export async function createBrand(formData: FormData) {
     console.error("Failed to create brand:", error);
     throw new Error("Failed to create brand");
   }
-
-  redirect("/admin/brands");
 }
 
 // Update a brand
-export async function updateBrand(id: number, formData: FormData) {
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string;
-  const logoUrl = formData.get("logoUrl") as string;
-
-  // Validation
-  if (!name || name.trim().length === 0) {
-    throw new Error("Brand name is required");
-  }
-
+export async function updateBrand(id: number, data: BrandSchemaType) {
   try {
+    // Validate the data using Zod schema
+    const validatedData = BrandSchema.parse(data);
+
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
       where: { id },
@@ -126,7 +113,7 @@ export async function updateBrand(id: number, formData: FormData) {
     // Check if another brand with the same name exists (excluding current brand)
     const duplicateBrand = await prisma.brand.findFirst({
       where: {
-        name: name.trim(),
+        name: validatedData.name.trim(),
         id: {
           not: id,
         },
@@ -140,9 +127,9 @@ export async function updateBrand(id: number, formData: FormData) {
     await prisma.brand.update({
       where: { id },
       data: {
-        name: name.trim(),
-        description: description?.trim() || null,
-        logoUrl: logoUrl?.trim() || null,
+        name: validatedData.name.trim(),
+        description: validatedData.description?.trim() || null,
+        logoUrl: validatedData.logoUrl?.trim() || null,
       },
     });
 
@@ -154,8 +141,6 @@ export async function updateBrand(id: number, formData: FormData) {
     console.error("Failed to update brand:", error);
     throw new Error("Failed to update brand");
   }
-
-  redirect("/admin/brands");
 }
 
 // Delete a brand

@@ -51,12 +51,7 @@ model Category {
 model Product {
   id          Int        @id @default(autoincrement())
   name        String
-  reference   String? // e.g. "4130", "Q65 SN"
   description String?
-  material    String?
-  dimensions  String?
-  finish      String?
-  accessories String?
   imageUrl    String?
   brandId     Int
   brand       Brand      @relation(fields: [brandId], references: [id])
@@ -66,7 +61,7 @@ model Product {
   category    Category?  @relation(fields: [categoryId], references: [id])
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  data        Json
+  data        Json?
 }
 
 model User {

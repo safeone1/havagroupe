@@ -9,7 +9,9 @@ const Wrapper = ({ children }: Props) => {
   return (
     <>
       <Toaster position="top-right" richColors />
-      <LenisProvider>{children}</LenisProvider>
+      {/* <LenisProvider> */}
+      {children}
+      {/* </LenisProvider> */}
     </>
   );
 };

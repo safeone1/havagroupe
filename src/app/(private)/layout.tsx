@@ -7,7 +7,7 @@ interface Props {
 
 const layout = ({ children }: Props) => {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100">
       <AdminBar />
       {children}
     </div>

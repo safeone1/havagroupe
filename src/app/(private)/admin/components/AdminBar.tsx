@@ -7,6 +7,7 @@ import {
   Users,
   Settings,
   Home,
+  Layers2,
 } from "lucide-react";
 
 const AdminBar = () => {
@@ -14,6 +15,7 @@ const AdminBar = () => {
     { name: "Dashboard", href: "/admin", icon: Home },
     { name: "Brands", href: "/admin/brands", icon: Building2 },
     { name: "Products", href: "/admin/products", icon: Package },
+    { name: "Categories", href: "/admin/categories", icon: Layers2 },
     { name: "Catalogues", href: "/admin/catalogues", icon: FolderOpen },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Settings", href: "/admin/settings", icon: Settings },

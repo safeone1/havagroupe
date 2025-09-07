@@ -26,7 +26,7 @@ const ProductsPage = async () => {
   }
 
   return (
-    <div className="flex-1 p-8 bg-gray-50">
+    <div className="flex-1 p-8 bg-gray-50 overflow-y-scroll">
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -69,16 +69,13 @@ const ProductsPage = async () => {
                   Product
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Reference
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Brand
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Material
+                  Catalogue
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Created
@@ -119,16 +116,13 @@ const ProductsPage = async () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {product.reference || "—"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {product.brand.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {product.category?.name || "—"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {product.material || "—"}
+                    {product.catalogue?.title || "—"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {new Date(product.createdAt).toLocaleDateString()}
@@ -137,7 +131,7 @@ const ProductsPage = async () => {
                     <div className="flex justify-end space-x-2">
                       <Link
                         href={`/admin/products/${product.id}/edit`}
-                        className="text-indigo-600 hover:text-indigo-900 p-2 hover:bg-indigo-50 rounded transition-colors"
+                        className="text-indigo-600 flex justify-center items-center hover:text-indigo-900 p-2 hover:bg-indigo-50 rounded transition-colors"
                       >
                         <Edit size={16} />
                       </Link>

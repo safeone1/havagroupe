@@ -4,7 +4,8 @@ import React, { useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import {
-  createProductWithSchema,
+  getProduct,
+  updateProductWithSchema,
   getBrandsForDropdown,
   getCategoriesForDropdown,
   getCataloguesForDropdown,
@@ -19,21 +20,40 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Uploader, { UploaderRef } from "@/components/Uploader";
 import { useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import { uploadFile } from "@/lib/actions/uploadpic";
 import { Brand, Category, Catalogue } from "@/generated/prisma";
 
-const CreateProductPage = () => {
+interface EditProductPageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+const EditProductPage = ({ params }: EditProductPageProps) => {
   const router = useRouter();
   const uploaderRef = useRef<UploaderRef>(null);
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [brands, setBrands] = React.useState<Brand[]>([]);
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [catalogues, setCatalogues] = React.useState<Catalogue[]>([]);
+  const [currentProduct, setCurrentProduct] = React.useState<{
+    id: number;
+    name: string;
+    description?: string | null;
+    imageUrl?: string | null;
+    brandId: number;
+    categoryId?: number | null;
+    catalogueId?: number | null;
+  } | null>(null);
+  const resolvedParams = React.use(params);
+  const id = parseInt(resolvedParams.id);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ProductSchemaType>({
     resolver: zodResolver(ProductSchema),
@@ -48,31 +68,52 @@ const CreateProductPage = () => {
   });
 
   React.useEffect(() => {
-    const fetchDropdownData = async () => {
+    const fetchData = async () => {
       try {
-        const [brandsData, categoriesData, cataloguesData] = await Promise.all([
-          getBrandsForDropdown(),
-          getCategoriesForDropdown(),
-          getCataloguesForDropdown(),
-        ]);
+        if (isNaN(id)) {
+          notFound();
+        }
 
+        // Fetch product data and dropdown data in parallel
+        const [productData, brandsData, categoriesData, cataloguesData] =
+          await Promise.all([
+            getProduct(id),
+            getBrandsForDropdown(),
+            getCategoriesForDropdown(),
+            getCataloguesForDropdown(),
+          ]);
+
+        if (!productData) {
+          notFound();
+        }
+
+        setCurrentProduct(productData);
         setBrands(brandsData);
         setCategories(categoriesData);
         setCatalogues(cataloguesData);
+
+        reset({
+          name: productData.name,
+          description: productData.description || "",
+          imageUrl: productData.imageUrl || undefined,
+          brandId: productData.brandId.toString(),
+          categoryId: productData.categoryId?.toString() || "",
+          catalogueId: productData.catalogueId?.toString() || "",
+        });
       } catch (error) {
-        console.error("Error fetching dropdown data:", error);
-        toast.error("Failed to load form data");
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load product data");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDropdownData();
-  }, []);
+    fetchData();
+  }, [id, reset]);
 
   const onSubmit = async (data: ProductSchemaType) => {
     try {
-      let imageUrl = "";
+      let imageUrl = data.imageUrl;
 
       // Upload the file if one is selected
       if (selectedFile) {
@@ -85,13 +126,12 @@ const CreateProductPage = () => {
         ...data,
         imageUrl,
       };
-
-      await createProductWithSchema(finalData);
-      toast.success("Product created successfully!");
+      await updateProductWithSchema(id, finalData);
+      toast.success("Product updated successfully!");
       router.push("/admin/products");
     } catch (err) {
-      console.error("Error creating product:", err);
-      toast.error("Failed to create product.");
+      console.error("Error updating product:", err);
+      toast.error("Failed to update product.");
     }
   };
 
@@ -109,9 +149,11 @@ const CreateProductPage = () => {
             <div className="h-4 bg-gray-300 rounded w-32 mb-8"></div>
             <div className="bg-white rounded-lg shadow p-6">
               <div className="space-y-6">
-                <div className="h-4 bg-gray-300 rounded w-20"></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="h-4 bg-gray-300 rounded w-20"></div>
+                  <div className="h-4 bg-gray-300 rounded w-20"></div>
+                </div>
                 <div className="h-10 bg-gray-300 rounded"></div>
-                <div className="h-4 bg-gray-300 rounded w-20"></div>
                 <div className="h-24 bg-gray-300 rounded"></div>
               </div>
             </div>
@@ -132,12 +174,8 @@ const CreateProductPage = () => {
             <ArrowLeft size={16} className="mr-2" />
             Back to Products
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Create New Product
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Add a new product to your catalog
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
+          <p className="text-gray-600 mt-2">Update product information</p>
         </div>
 
         <Card className="p-6">
@@ -277,7 +315,11 @@ const CreateProductPage = () => {
             </div>
 
             {/* Image Upload */}
-            <Uploader ref={uploaderRef} onFileSelect={handleFileSelect} />
+            <Uploader
+              ref={uploaderRef}
+              onFileSelect={handleFileSelect}
+              initialImageUrl={currentProduct?.imageUrl || undefined}
+            />
 
             {/* Form Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t">
@@ -287,7 +329,7 @@ const CreateProductPage = () => {
                 </Button>
               </Link>
               <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                Create Product
+                Update Product
               </Button>
             </div>
           </form>
@@ -297,4 +339,4 @@ const CreateProductPage = () => {
   );
 };
 
-export default CreateProductPage;
+export default EditProductPage;
