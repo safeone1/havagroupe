@@ -13,33 +13,37 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React, { useTransition } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
-// import { SocialSignin , CredsSignin } from '@/lib/auth-client'
+// import { SocialSignin, CredsSignin } from '@/lib/auth-client';
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-// import { LoginSchema, LoginSchemaType } from '@/zod/AuthSchemas'
+// import { LoginSchema, LoginSchemaType } from '@/zod/AuthSchemas';
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginSchema, LoginSchemaType } from "@/lib/Schema";
+import { CredsSignIn } from "@/lib/signIn";
+import { toast } from "sonner";
+import Image from "next/image";
 
 const Login = () => {
   const [isPendingGithub, startGithubTransition] = useTransition();
   const [isPendingGoogle, startGoogleTransition] = useTransition();
-  // const {
-  //   register,
-  //   reset,
-  //   handleSubmit,
-  //   formState: { errors, isSubmitting },
-  // } = useForm<LoginSchemaType>({
-  //   resolver: zodResolver(LoginSchema),
-  //   defaultValues: {
-  //     email: "",
-  //     password: "",
-  //   },
-  // });
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginSchemaType>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  // const onSubmit = async (data: LoginSchemaType) => {
-  //   const result = await CredsSignin(data);
-  //   console.log(result);
-  //   reset();
-  // };
+  const onSubmit = async (data: LoginSchemaType) => {
+    await CredsSignIn(data);
+
+    reset();
+  };
 
   return (
     <div className="flex flex-col items-center justify-center h-svh relative gap-4 p-4 sm:p-6">
@@ -53,13 +57,8 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 flex flex-col items-center justify-center">
-          <form
-            className="w-full space-y-4"
-            // onSubmit={handleSubmit(onSubmit)}
-          >
-            <Field
-            // errors={errors.email?.message}
-            >
+          <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            <Field errors={errors.email?.message}>
               <Label htmlFor="email" className="text-sm font-medium">
                 Email
               </Label>
@@ -67,12 +66,10 @@ const Login = () => {
                 placeholder="example@gmail.com"
                 id="email"
                 type="name"
-                // {...register("email")}
+                {...register("email")}
               />
             </Field>
-            <Field
-            // errors={errors.password?.message}
-            >
+            <Field errors={errors.password?.message}>
               <Label htmlFor="password" className="text-sm font-medium">
                 Password
               </Label>
@@ -80,21 +77,20 @@ const Login = () => {
                 placeholder="*********"
                 id="password"
                 type="password"
-                // {...register("password")}
+                {...register("password")}
               />
             </Field>
             <Button
-              // disabled={isSubmitting}
+              disabled={isSubmitting}
               variant={"default"}
               className="w-full"
               type="submit"
             >
-              {/* {isSubmitting ? (
+              {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 "Continue with credentials"
-              )} */}
-              Continue with credentials
+              )}
             </Button>
           </form>
           <Link className=" flex justify-center" href="/auth/forgot-password">
@@ -153,6 +149,7 @@ const Login = () => {
         By clicking continue with credentials, you agree to our terms and
         conditions and <strong className="underline">privacy policy</strong>
       </p>
+      <Image src="/hava_logo.svg" alt="logo" width={100} height={100} />
     </div>
   );
 };

@@ -119,11 +119,4 @@
   body {
     @apply bg-background text-foreground;
   }
-
-  .inp {
-    @apply flex flex-col gap-1.5 w-[80%];
-    input {
-      @apply p-2;
-    }
-  }
 }

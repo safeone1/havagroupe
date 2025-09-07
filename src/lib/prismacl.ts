@@ -1,16 +1,21 @@
 import { PrismaClient } from "@/generated/prisma";
 
-let prisma = new PrismaClient();
-
-// Note: In dev mode with Next.js hot-reload, use a global singleton to avoid multiple Prisma instances
+// Add type to `globalThis` for TS
 declare global {
   var prisma: PrismaClient | undefined;
 }
 
-if (process.env.NODE_ENV === "development") {
-  if (!global.prisma) {
-    global.prisma = new PrismaClient();
+let prisma: PrismaClient;
+
+if (process.env.NODE_ENV === "production") {
+  // Always create a new PrismaClient in production
+  prisma = new PrismaClient();
+} else {
+  // In development, use globalThis to avoid multiple instances
+  if (!globalThis.prisma) {
+    globalThis.prisma = new PrismaClient();
   }
-  prisma = global.prisma;
+  prisma = globalThis.prisma;
 }
+
 export { prisma };
