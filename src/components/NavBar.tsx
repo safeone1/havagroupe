@@ -30,13 +30,11 @@ const NavBar = ({ className, isHome = false }: Props) => {
   const pathname = usePathname();
   const id = useId();
   const navigationLinks = [
-    { href: "/", label: "Accueil" },
-    { href: "/marques", label: "Marques" },
-    { href: "/produits", label: "Produits" },
-    { href: "/catalogues", label: "Catalogues" },
-    // { href: "/ar", label: "Réalité Augmentée" },
-    // { href: "/a-propos", label: "Apropos" },
-    { href: "/contact", label: "Contact" },
+    { href: "/", label: "Home" },
+    { href: "#about", label: "About" },
+    { href: "#products", label: "Products" },
+    { href: "#brands", label: "Brands" },
+    { href: "#contact", label: "Contact" },
   ];
 
   return (
