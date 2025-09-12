@@ -9,7 +9,7 @@ const layout = ({ children }: Props) => {
   return (
     <div className="flex h-screen bg-gray-100">
       <AdminBar />
-      {children}
+      <div className="flex-1 overflow-auto min-h-0">{children}</div>
     </div>
   );
 };

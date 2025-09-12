@@ -134,130 +134,134 @@ const EditCategoryPage = ({ params }: EditCategoryPageProps) => {
   }
 
   return (
-    <div className="flex-1 p-8 bg-gray-50 overflow-y-scroll">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
-          <Link
-            href="/admin/categories"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ArrowLeft size={16} className="mr-2" />
-            Back to Categories
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Category</h1>
-          <p className="text-gray-600 mt-2">Update category information</p>
-        </div>
+    <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="flex-1 p-8 overflow-y-auto">
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-8">
+            <Link
+              href="/admin/categories"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+            >
+              <ArrowLeft size={16} className="mr-2" />
+              Back to Categories
+            </Link>
+            <h1 className="text-3xl font-bold text-gray-900">Edit Category</h1>
+            <p className="text-gray-600 mt-2">Update category information</p>
+          </div>
 
-        <Card className="p-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Category Name Field */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="name"
-                className="text-sm font-medium text-gray-700"
-              >
-                Category Name *
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter category name"
-                {...register("name")}
-                className={`w-full ${errors.name ? "border-red-500" : ""}`}
-              />
-              {errors.name && (
-                <p className="text-sm text-red-600">{errors.name.message}</p>
-              )}
-              <p className="text-xs text-gray-500">
-                Current slug: /{currentCategory?.slug}
-              </p>
-            </div>
-
-            {/* Parent Category Field */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="parentId"
-                className="text-sm font-medium text-gray-700"
-              >
-                Parent Category (Optional)
-              </Label>
-              <select
-                id="parentId"
-                {...register("parentId")}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  errors.parentId ? "border-red-500" : "border-gray-300"
-                }`}
-              >
-                <option value="">None (Make this a main category)</option>
-                {parentCategories.map((category) => (
-                  <option key={category.id} value={category.id.toString()}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              {errors.parentId && (
-                <p className="text-sm text-red-600">
-                  {errors.parentId.message}
-                </p>
-              )}
-              <p className="text-xs text-gray-500">
-                {parentId
-                  ? "This will move the category under the selected parent"
-                  : "Category will be a main category"}
-              </p>
-            </div>
-
-            {/* Warning for categories with subcategories */}
-            {currentCategory?.hasSubcategories && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-                <h4 className="text-sm font-medium text-yellow-800 mb-2">
-                  ⚠️ Category has subcategories
-                </h4>
-                <p className="text-sm text-yellow-700">
-                  This category has subcategories. Be careful when changing the
-                  parent category as it will affect the entire hierarchy
-                  structure.
+          <Card className="p-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Category Name Field */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="name"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Category Name *
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Enter category name"
+                  {...register("name")}
+                  className={`w-full ${errors.name ? "border-red-500" : ""}`}
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-600">{errors.name.message}</p>
+                )}
+                <p className="text-xs text-gray-500">
+                  Current slug: /{currentCategory?.slug}
                 </p>
               </div>
-            )}
 
-            {/* Current Status */}
-            <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
-              <h4 className="text-sm font-medium text-gray-900 mb-2">
-                Current Status
-              </h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>
-                  • <strong>Name:</strong> {currentCategory?.name}
-                </li>
-                <li>
-                  • <strong>Slug:</strong> /{currentCategory?.slug}
-                </li>
-                <li>
-                  • <strong>Type:</strong>{" "}
-                  {currentCategory?.parentId ? "Subcategory" : "Main Category"}
-                </li>
-                {currentCategory?.hasSubcategories && (
-                  <li>
-                    • <strong>Has subcategories:</strong> Yes
-                  </li>
+              {/* Parent Category Field */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="parentId"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Parent Category (Optional)
+                </Label>
+                <select
+                  id="parentId"
+                  {...register("parentId")}
+                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.parentId ? "border-red-500" : "border-gray-300"
+                  }`}
+                >
+                  <option value="">None (Make this a main category)</option>
+                  {parentCategories.map((category) => (
+                    <option key={category.id} value={category.id.toString()}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.parentId && (
+                  <p className="text-sm text-red-600">
+                    {errors.parentId.message}
+                  </p>
                 )}
-              </ul>
-            </div>
+                <p className="text-xs text-gray-500">
+                  {parentId
+                    ? "This will move the category under the selected parent"
+                    : "Category will be a main category"}
+                </p>
+              </div>
 
-            {/* Form Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t">
-              <Link href="/admin/categories">
-                <Button type="button" variant="outline">
-                  Cancel
+              {/* Warning for categories with subcategories */}
+              {currentCategory?.hasSubcategories && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                  <h4 className="text-sm font-medium text-yellow-800 mb-2">
+                    ⚠️ Category has subcategories
+                  </h4>
+                  <p className="text-sm text-yellow-700">
+                    This category has subcategories. Be careful when changing
+                    the parent category as it will affect the entire hierarchy
+                    structure.
+                  </p>
+                </div>
+              )}
+
+              {/* Current Status */}
+              <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
+                <h4 className="text-sm font-medium text-gray-900 mb-2">
+                  Current Status
+                </h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>
+                    • <strong>Name:</strong> {currentCategory?.name}
+                  </li>
+                  <li>
+                    • <strong>Slug:</strong> /{currentCategory?.slug}
+                  </li>
+                  <li>
+                    • <strong>Type:</strong>{" "}
+                    {currentCategory?.parentId
+                      ? "Subcategory"
+                      : "Main Category"}
+                  </li>
+                  {currentCategory?.hasSubcategories && (
+                    <li>
+                      • <strong>Has subcategories:</strong> Yes
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex items-center justify-end space-x-4 pt-6 border-t">
+                <Link href="/admin/categories">
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                </Link>
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+                  Update Category
                 </Button>
-              </Link>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                Update Category
-              </Button>
-            </div>
-          </form>
-        </Card>
+              </div>
+            </form>
+          </Card>
+        </div>
       </div>
     </div>
   );
