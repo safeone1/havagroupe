@@ -45,37 +45,40 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.4279 0.1545 20.63);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Brand colors */
+  --primary: #911828; /* main accent */
+  --primary-foreground: #FFFFFF;
+  --background: #F5F5F5; /* light clean gray */
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --secondary: #E8E8E8;
+  --secondary-foreground: #222222;
+  --muted: #EDEDED;
+  --muted-foreground: #5A5A5A;
+  --accent: #EFEFEF;
+  --accent-foreground: #222222;
+  --destructive: #B00020;
+  --border: #E2E2E2;
+  --input: #E2E2E2;
+  --ring: #91182833; /* translucent ring */
+  /* Charts (placeholder harmonious palette) */
+  --chart-1: #911828;
+  --chart-2: #c93b4f;
+  --chart-3: #5f0f19;
+  --chart-4: #b34d5b;
+  --chart-5: #73111f;
+  /* Sidebar mapping */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #911828;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EFEFEF;
+  --sidebar-accent-foreground: #222222;
+  --sidebar-border: #E2E2E2;
+  --sidebar-ring: #91182833;
 }
 
 .dark {

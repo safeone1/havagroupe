@@ -192,7 +192,7 @@ export async function createProduct(formData: FormData) {
         brandId: parseInt(brandId),
         categoryId: categoryId ? parseInt(categoryId) : null,
         catalogueId: catalogueId ? parseInt(catalogueId) : null,
-        data: {},
+        attributes: {},
       },
     });
 
@@ -227,7 +227,7 @@ export async function createProductWithSchema(data: ProductSchemaType) {
         brandId: parseInt(data.brandId),
         categoryId: data.categoryId ? parseInt(data.categoryId) : null,
         catalogueId: data.catalogueId ? parseInt(data.catalogueId) : null,
-        data: {},
+        attributes: {},
       },
     });
 
@@ -265,7 +265,7 @@ export async function updateProductWithSchema(
         brandId: parseInt(data.brandId),
         categoryId: data.categoryId ? parseInt(data.categoryId) : null,
         catalogueId: data.catalogueId ? parseInt(data.catalogueId) : null,
-        data: {},
+        attributes: {},
       },
     });
 
@@ -318,7 +318,7 @@ export async function updateProduct(id: number, formData: FormData) {
         brandId: parseInt(brandId),
         categoryId: categoryId ? parseInt(categoryId) : null,
         catalogueId: catalogueId ? parseInt(catalogueId) : null,
-        data: {},
+        attributes: {},
       },
     });
 
