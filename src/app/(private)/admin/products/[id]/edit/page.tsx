@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import Uploader, { UploaderRef } from "@/components/Uploader";
+import Uploader, { UploaderRef } from "@/components/admin/Uploader";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { uploadFile } from "@/lib/actions/uploadpic";
@@ -49,8 +49,19 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
     categoryId?: number | null;
     catalogueId?: number | null;
   } | null>(null);
-  const resolvedParams = React.use(params);
-  const id = parseInt(resolvedParams.id);
+
+  // Properly handle the async params
+  const [resolvedParams, setResolvedParams] = React.useState<{ id: string } | null>(null);
+
+  React.useEffect(() => {
+    const resolveParams = async () => {
+      const resolved = await params;
+      setResolvedParams(resolved);
+    };
+    resolveParams();
+  }, [params]);
+
+  const id = resolvedParams ? parseInt(resolvedParams.id) : null;
 
   const {
     register,
@@ -62,7 +73,6 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
     defaultValues: {
       name: "",
       description: "",
-      imageUrl: undefined,
       brandId: "",
       categoryId: "",
       catalogueId: "",
@@ -72,8 +82,9 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        if (isNaN(id)) {
+        if (!id || isNaN(id)) {
           notFound();
+          return;
         }
 
         // Fetch product data and dropdown data in parallel
@@ -87,6 +98,7 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
 
         if (!productData) {
           notFound();
+          return;
         }
 
         setCurrentProduct(productData);
@@ -109,11 +121,18 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
       }
     };
 
-    fetchData();
+    if (id !== null) {
+      fetchData();
+    }
   }, [id, reset]);
 
   const onSubmit = async (data: ProductSchemaType) => {
     try {
+      if (!id) {
+        toast.error("Invalid product ID");
+        return;
+      }
+      
       // Update product data (images are handled separately)
       await updateProductWithSchema(id, data);
       toast.success("Product updated successfully!");
@@ -194,7 +213,7 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
     }
   };
 
-  if (loading) {
+  if (loading || !resolvedParams) {
     return (
       <div className="flex-1 p-8 bg-gray-50">
         <div className="max-w-4xl mx-auto">

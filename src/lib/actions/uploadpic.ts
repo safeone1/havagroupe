@@ -18,6 +18,7 @@ export async function uploadFile(formData: FormData): Promise<string> {
       "image/jpg",
       "image/png",
       "image/gif",
+      "image/webp",
       "image/svg+xml",
     ];
     if (!allowedTypes.includes(file.type)) {

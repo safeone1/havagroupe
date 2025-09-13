@@ -66,7 +66,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
         getInputProps,
       },
     ] = useFileUpload({
-      accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif",
+      accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif,image/webp",
       maxSize,
       multiple,
       onFilesAdded: (addedFiles) => {
@@ -268,7 +268,7 @@ const Uploader = forwardRef<UploaderRef, UploaderProps>(
                   Drop your {multiple ? "images" : "image"} here
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  SVG, PNG, JPG or GIF (max. {maxSizeMB}MB
+                  SVG, PNG, JPG, GIF or WebP (max. {maxSizeMB}MB
                   {multiple ? " each" : ""})
                 </p>
                 <Button

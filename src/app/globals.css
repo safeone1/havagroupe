@@ -121,6 +121,31 @@
   }
 }
 
+/* Performance optimizations */
+.page-content {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000;
+}
+
+/* Optimize animations */
+[style*="will-change"] {
+  will-change: transform, opacity;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .floating-element {
+    animation: none !important;
+  }
+}
+
 /* Custom utility classes */
 .bg-grid-pattern {
   background-image: linear-gradient(rgba(145, 24, 40, 0.1) 1px, transparent 1px),

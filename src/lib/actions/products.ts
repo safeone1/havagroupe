@@ -11,6 +11,7 @@ import {
   ImageUrl,
 } from "@/generated/prisma";
 import { ProductSchemaType } from "@/lib/Schema";
+import { generateSlug } from "@/lib/utils/slug-utils";
 
 // Type for product with relations
 export type ProductWithRelations = Product & {
@@ -185,14 +186,18 @@ export async function createProduct(formData: FormData) {
   }
 
   try {
+    // Generate slug from name
+    const slug = generateSlug(name);
+
     const product = await prisma.product.create({
       data: {
         name: name.trim(),
+        slug,
         description: description?.trim() || null,
         brandId: parseInt(brandId),
         categoryId: categoryId ? parseInt(categoryId) : null,
         catalogueId: catalogueId ? parseInt(catalogueId) : null,
-        data: {},
+        attributes: {},
       },
     });
 
@@ -217,17 +222,52 @@ export async function createProduct(formData: FormData) {
   }
 }
 
+// Helper function to parse and validate JSON attributes
+function parseAttributes(attributesString: string | undefined): Record<string, any> {
+  if (!attributesString || attributesString.trim() === '') {
+    return {};
+  }
+  
+  try {
+    const parsed = JSON.parse(attributesString);
+    // Ensure it's an object and not an array or primitive
+    if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+      return parsed;
+    }
+    return {};
+  } catch (error) {
+    console.warn('Invalid JSON attributes:', attributesString);
+    return {};
+  }
+}
+
 // Create a product with schema validation
 export async function createProductWithSchema(data: ProductSchemaType) {
   try {
+    // Generate slug from name
+    const slug = generateSlug(data.name);
+
+    // Check if slug already exists
+    const existingProduct = await prisma.product.findUnique({
+      where: { slug },
+    });
+
+    if (existingProduct) {
+      throw new Error("A product with this name already exists");
+    }
+
+    // Parse attributes JSON
+    const attributes = parseAttributes(data.attributes);
+
     const product = await prisma.product.create({
       data: {
         name: data.name.trim(),
+        slug,
         description: data.description?.trim() || null,
         brandId: parseInt(data.brandId),
         categoryId: data.categoryId ? parseInt(data.categoryId) : null,
         catalogueId: data.catalogueId ? parseInt(data.catalogueId) : null,
-        data: {},
+        attributes,
       },
     });
 
@@ -256,16 +296,32 @@ export async function updateProductWithSchema(
     if (!existingProduct) {
       throw new Error("Product not found");
     }
+    
+    // Generate slug from name
+    const slug = generateSlug(data.name);
+
+    // Check if another product with the same slug exists (excluding current product)
+    const duplicateProduct = await prisma.product.findUnique({
+      where: { slug },
+    });
+
+    if (duplicateProduct && duplicateProduct.id !== id) {
+      throw new Error("A product with this name already exists");
+    }
+
+    // Parse attributes JSON
+    const attributes = parseAttributes(data.attributes);
 
     await prisma.product.update({
       where: { id },
       data: {
         name: data.name.trim(),
+        slug,
         description: data.description?.trim() || null,
         brandId: parseInt(data.brandId),
         categoryId: data.categoryId ? parseInt(data.categoryId) : null,
         catalogueId: data.catalogueId ? parseInt(data.catalogueId) : null,
-        data: {},
+        attributes,
       },
     });
 
@@ -310,15 +366,19 @@ export async function updateProduct(id: number, formData: FormData) {
       throw new Error("Product not found");
     }
 
+    // Generate slug from name
+    const slug = generateSlug(name);
+
     await prisma.product.update({
       where: { id },
       data: {
         name: name.trim(),
+        slug,
         description: description?.trim() || null,
         brandId: parseInt(brandId),
         categoryId: categoryId ? parseInt(categoryId) : null,
         catalogueId: catalogueId ? parseInt(catalogueId) : null,
-        data: {},
+        attributes: {},
       },
     });
 

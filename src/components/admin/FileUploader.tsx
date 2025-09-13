@@ -51,7 +51,7 @@ export default function Component() {
       getInputProps,
     },
   ] = useFileUpload({
-    accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif",
+    accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif,image/webp",
     maxSize,
     multiple: true,
     maxFiles,
@@ -84,7 +84,7 @@ export default function Component() {
           </div>
           <p className="mb-1.5 text-sm font-medium">Drop your images here</p>
           <p className="text-muted-foreground text-xs">
-            SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
+            SVG, PNG, JPG, GIF or WebP (max. {maxSizeMB}MB)
           </p>
           <Button variant="outline" className="mt-4" onClick={openFileDialog}>
             <UploadIcon className="-ms-1 opacity-60" aria-hidden="true" />

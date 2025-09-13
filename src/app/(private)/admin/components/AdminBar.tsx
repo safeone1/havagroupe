@@ -72,8 +72,10 @@ const AdminBar = () => {
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {navItems.map((item) => {
           const IconComponent = item.icon;
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
+          // Special case for Dashboard - only active when exactly on /admin
+          const isActive = item.href === "/admin" 
+            ? pathname === "/admin"
+            : pathname === item.href || pathname.startsWith(item.href + "/");
 
           return (
             <Link

@@ -32,49 +32,20 @@ const BrandsSection = () => {
         }
       );
 
-      // Brands grid cascading animation
+      // Simplified brands grid animation - no continuous floating
       gsap.fromTo(
         ".brand-card",
-        { y: 40, opacity: 0, scale: 0.9 },
+        { y: 30, opacity: 0, scale: 0.95 },
         {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 0.6,
-          stagger: 0.05,
-          ease: "back.out(1.7)",
+          duration: 0.4,
+          stagger: 0.03, // Reduced stagger for faster loading feel
+          ease: "power2.out",
           scrollTrigger: {
             trigger: gridRef.current,
             start: "top 70%",
-            end: "bottom 40%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-
-      // Continuous floating animation for brand cards
-      gsap.to(".brand-card", {
-        y: -5,
-        duration: 3,
-        ease: "power2.inOut",
-        yoyo: true,
-        repeat: -1,
-        stagger: 0.2,
-      });
-
-      // Background elements animation
-      gsap.fromTo(
-        ".brand-bg-element",
-        { scale: 0, opacity: 0, rotation: -45 },
-        {
-          scale: 1,
-          opacity: 1,
-          rotation: 0,
-          duration: 2,
-          ease: "elastic.out(1, 0.5)",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 60%",
             end: "bottom 40%",
             toggleActions: "play none none reverse",
           },
@@ -165,8 +136,11 @@ const BrandsSection = () => {
                     width={80}
                     height={40}
                     className="max-w-full max-h-full object-contain filter group-hover:brightness-110 transition-all duration-300"
+                    loading="lazy"
+                    quality={75}
+                    sizes="(max-width: 768px) 80px, 80px"
                     onError={(e) => {
-                      // Fallback to text if image doesn&apos;t exist
+                      // Fallback to text if image doesn't exist
                       e.currentTarget.style.display = "none";
                       e.currentTarget.nextElementSibling!.classList.remove(
                         "hidden"

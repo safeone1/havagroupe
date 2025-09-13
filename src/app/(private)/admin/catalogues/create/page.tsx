@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import Uploader, { UploaderRef } from "@/components/Uploader";
+import Uploader, { UploaderRef } from "@/components/admin/Uploader";
 import { useRouter } from "next/navigation";
 import { uploadFile } from "@/lib/actions/uploadpic";
 

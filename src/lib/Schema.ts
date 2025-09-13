@@ -37,6 +37,15 @@ export const ProductSchema = z.object({
   brandId: z.string().min(1, "Brand is required"),
   categoryId: z.string().optional(),
   catalogueId: z.string().optional(),
+  attributes: z.string().optional().refine((val) => {
+    if (!val || val.trim() === '') return true;
+    try {
+      const parsed = JSON.parse(val);
+      return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
+    } catch {
+      return false;
+    }
+  }, "Attributes must be valid JSON object format"),
 });
 
 export type ProductSchemaType = z.infer<typeof ProductSchema>;
@@ -57,3 +66,15 @@ export const CatalogueSchema = z.object({
 });
 
 export type CatalogueSchemaType = z.infer<typeof CatalogueSchema>;
+
+export const ContactFormSchema = z.object({
+  firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
+  lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  email: z.string().email("Veuillez entrer une adresse email valide"),
+  phone: z.string().optional(),
+  company: z.string().optional(),
+  subject: z.string().min(5, "Le sujet doit contenir au moins 5 caractères"),
+  message: z.string().min(10, "Le message doit contenir au moins 10 caractères"),
+});
+
+export type ContactFormSchemaType = z.infer<typeof ContactFormSchema>;

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Brand } from "@/generated/prisma";
 import { BrandSchema, BrandSchemaType } from "@/lib/Schema";
+import { generateSlug } from "@/lib/utils/slug-utils";
 
 // Type for brand with counts
 export type BrandWithCounts = Brand & {
@@ -65,12 +66,13 @@ export async function createBrand(data: BrandSchemaType) {
   try {
     // Validate the data using Zod schema
     const validatedData = BrandSchema.parse(data);
+    
+    // Generate slug from name
+    const slug = generateSlug(validatedData.name);
 
-    // Check if brand name already exists
-    const existingBrand = await prisma.brand.findFirst({
-      where: {
-        name: validatedData.name.trim(),
-      },
+    // Check if slug already exists
+    const existingBrand = await prisma.brand.findUnique({
+      where: { slug },
     });
 
     if (existingBrand) {
@@ -80,6 +82,7 @@ export async function createBrand(data: BrandSchemaType) {
     await prisma.brand.create({
       data: {
         name: validatedData.name.trim(),
+        slug,
         description: validatedData.description?.trim() || null,
         logoUrl: validatedData.logoUrl?.trim() || null,
       },
@@ -109,18 +112,16 @@ export async function updateBrand(id: number, data: BrandSchemaType) {
     if (!existingBrand) {
       throw new Error("Brand not found");
     }
+    
+    // Generate slug from name
+    const slug = generateSlug(validatedData.name);
 
-    // Check if another brand with the same name exists (excluding current brand)
-    const duplicateBrand = await prisma.brand.findFirst({
-      where: {
-        name: validatedData.name.trim(),
-        id: {
-          not: id,
-        },
-      },
+    // Check if another brand with the same slug exists (excluding current brand)
+    const duplicateBrand = await prisma.brand.findUnique({
+      where: { slug },
     });
 
-    if (duplicateBrand) {
+    if (duplicateBrand && duplicateBrand.id !== id) {
       throw new Error("A brand with this name already exists");
     }
 
@@ -128,6 +129,7 @@ export async function updateBrand(id: number, data: BrandSchemaType) {
       where: { id },
       data: {
         name: validatedData.name.trim(),
+        slug,
         description: validatedData.description?.trim() || null,
         logoUrl: validatedData.logoUrl?.trim() || null,
       },

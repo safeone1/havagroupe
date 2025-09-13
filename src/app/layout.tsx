@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import Wrapper from "@/Providers/Wrapper";
-import NavBar from "@/components/NavBar";
+import { PerformanceMonitor } from "@/components/shared";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${montserrat.variable} antialiased`}
       >
+        <PerformanceMonitor />
         <Wrapper>{children}</Wrapper>
       </body>
     </html>
