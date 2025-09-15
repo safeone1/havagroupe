@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prismacl";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { Brand } from "@/generated/prisma";
 import { BrandSchema, BrandSchemaType } from "@/lib/Schema";
 import { generateSlug } from "@/lib/utils/slug-utils";

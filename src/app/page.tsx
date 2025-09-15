@@ -21,7 +21,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white font-montserrat">
       <Header />
-      <main className="page-content">
+      <main className="page-content pt-24 lg:pt-28">
         <HeroSection />
         <Suspense fallback={<SectionSkeleton />}>
           <AboutSection />

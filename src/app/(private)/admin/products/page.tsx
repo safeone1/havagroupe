@@ -14,6 +14,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getProducts, type ProductWithRelations } from "@/lib/actions/products";
 import DeleteProductButton from "./components/DeleteProductButton";
+import AttributesDisplay from "./components/AttributesDisplay";
 import AdminPageLayout from "../components/AdminPageLayout";
 
 const ProductsPage = async () => {
@@ -201,6 +202,9 @@ const ProductsPage = async () => {
                     Catalogue
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Attributes
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Created
                   </th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -265,6 +269,9 @@ const ProductsPage = async () => {
                       ) : (
                         <span className="text-gray-400 italic text-sm">—</span>
                       )}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <AttributesDisplay attributes={product.attributes} compact />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {new Date(product.createdAt).toLocaleDateString()}

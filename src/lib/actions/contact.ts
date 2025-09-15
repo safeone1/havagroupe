@@ -24,11 +24,11 @@ export async function submitContactForm(data: ContactFormSchemaType) {
       data: result.data,
       message: result.message,
     };
-  } catch (error) {
-    console.error("Contact form submission error:", error);
+  } catch (error: unknown) {
+    console.error("Failed to send contact form:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Erreur inconnue",
+      error: "Failed to send message. Please try again.",
     };
   }
 }
@@ -36,28 +36,34 @@ export async function submitContactForm(data: ContactFormSchemaType) {
 /**
  * Validate contact form data
  */
-export function validateContactForm(data: any): { isValid: boolean; errors?: string[] } {
+export function validateContactForm(data: Record<string, unknown>): { isValid: boolean; errors?: string[] } {
   try {
     // This could be expanded with more complex validation logic
     const errors: string[] = [];
 
-    if (!data.firstName || data.firstName.length < 2) {
+    const firstName = typeof data.firstName === 'string' ? data.firstName : '';
+    const lastName = typeof data.lastName === 'string' ? data.lastName : '';
+    const email = typeof data.email === 'string' ? data.email : '';
+    const subject = typeof data.subject === 'string' ? data.subject : '';
+    const message = typeof data.message === 'string' ? data.message : '';
+
+    if (!firstName || firstName.length < 2) {
       errors.push("Le prénom doit contenir au moins 2 caractères");
     }
 
-    if (!data.lastName || data.lastName.length < 2) {
+    if (!lastName || lastName.length < 2) {
       errors.push("Le nom doit contenir au moins 2 caractères");
     }
 
-    if (!data.email || !data.email.includes("@")) {
+    if (!email || !email.includes("@")) {
       errors.push("Veuillez entrer une adresse email valide");
     }
 
-    if (!data.subject || data.subject.length < 5) {
+    if (!subject || subject.length < 5) {
       errors.push("Le sujet doit contenir au moins 5 caractères");
     }
 
-    if (!data.message || data.message.length < 10) {
+    if (!message || message.length < 10) {
       errors.push("Le message doit contenir au moins 10 caractères");
     }
 
@@ -65,7 +71,7 @@ export function validateContactForm(data: any): { isValid: boolean; errors?: str
       isValid: errors.length === 0,
       errors: errors.length > 0 ? errors : undefined,
     };
-  } catch (error) {
+  } catch {
     return {
       isValid: false,
       errors: ["Erreur de validation"],

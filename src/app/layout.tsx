@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import Wrapper from "@/Providers/Wrapper";
 import { PerformanceMonitor } from "@/components/shared";
+import ConditionalHeader from "@/components/layout/ConditionalHeader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${montserrat.variable} antialiased`}
       >
         <PerformanceMonitor />
+        <ConditionalHeader />
         <Wrapper>{children}</Wrapper>
       </body>
     </html>

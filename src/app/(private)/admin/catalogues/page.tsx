@@ -237,10 +237,10 @@ export default async function CataloguesPage() {
                       </div>
 
                       {/* Download Link */}
-                      {catalogue.downloadUrl && (
+                      {catalogue.fileUrl && (
                         <div className="mt-4 pt-3 border-t border-gray-100">
                           <a
-                            href={catalogue.downloadUrl}
+                            href={catalogue.fileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center space-x-2 text-[#911828] hover:text-[#6b1220] text-sm font-medium transition-colors"
