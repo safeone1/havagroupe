@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
@@ -37,8 +36,21 @@ import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { searchAll, SearchResults } from "@/lib/actions/products";
@@ -56,7 +68,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
   const [openMobile, setOpenMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
+  const [searchResults, setSearchResults] = useState<SearchResults | null>(
+    null
+  );
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -201,15 +215,13 @@ const NavBar = ({ className, isHome = false }: Props) => {
     if (linkHref === "/") return pathname === "/";
     if (linkHref === "/products") return pathname.startsWith("/products");
     if (linkHref === "/brands") return pathname.startsWith("/brands");
-    if (linkHref === "/#about") return pathname === "/";
-    if (linkHref === "/#contact") return pathname === "/";
     return pathname === linkHref;
   };
 
   const createFilterURL = (params: Record<string, any>) => {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
+      if (value !== undefined && value !== null && value !== "") {
         searchParams.set(key, String(value));
       }
     });
@@ -221,8 +233,8 @@ const NavBar = ({ className, isHome = false }: Props) => {
       ref={headerRef}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out",
-        scrolled 
-          ? "shadow-xl backdrop-blur-xl bg-white/98 border-b border-gray-100/50" 
+        scrolled
+          ? "shadow-xl backdrop-blur-xl bg-white/98 border-b border-gray-100/50"
           : "bg-transparent",
         className
       )}
@@ -231,8 +243,8 @@ const NavBar = ({ className, isHome = false }: Props) => {
       <div
         className={cn(
           "hidden lg:block border-b text-xs transition-all duration-500",
-          isHome && !scrolled 
-            ? "bg-transparent border-transparent" 
+          isHome && !scrolled
+            ? "bg-transparent border-transparent"
             : "bg-gradient-to-r from-gray-50/90 to-white/90 backdrop-blur-sm border-gray-200/50"
         )}
       >
@@ -256,7 +268,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
                 <div className="p-1.5 rounded-full bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
                   <Mail className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
                 </div>
-                <span className="text-sm font-medium">contact@havanegoce.com</span>
+                <span className="text-sm font-medium">
+                  contact@havanegoce.com
+                </span>
               </a>
             </div>
             <div className="flex items-center gap-4">
@@ -273,7 +287,11 @@ const NavBar = ({ className, isHome = false }: Props) => {
                   className="text-muted-foreground hover:text-[#911828] transition-all duration-300 p-2 rounded-lg hover:bg-[#911828]/10 group"
                   aria-label="Suivez-nous sur Instagram"
                 >
-                  <svg className="h-4 w-4 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="h-4 w-4 group-hover:scale-110 transition-transform"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                   </svg>
                 </a>
@@ -284,7 +302,11 @@ const NavBar = ({ className, isHome = false }: Props) => {
                   className="text-muted-foreground hover:text-[#911828] transition-all duration-300 p-2 rounded-lg hover:bg-[#911828]/10 group"
                   aria-label="Suivez-nous sur Facebook"
                 >
-                  <svg className="h-4 w-4 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="h-4 w-4 group-hover:scale-110 transition-transform"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                 </a>
@@ -306,9 +328,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
             {/* Mobile menu */}
             <Sheet open={openMobile} onOpenChange={setOpenMobile}>
               <SheetTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="md:hidden hover:bg-[#911828]/10 transition-colors"
                 >
                   <Menu className="h-6 w-6" />
@@ -317,10 +339,19 @@ const NavBar = ({ className, isHome = false }: Props) => {
               <SheetContent side="left" className="p-0 w-80">
                 <SheetHeader className="px-6 py-6 border-b bg-gradient-to-r from-[#911828]/5 to-white">
                   <SheetTitle className="flex items-center gap-3">
-                    <Image src="/hava_logo.svg" alt="Logo" width={40} height={40} />
+                    <Image
+                      src="/hava_logo.svg"
+                      alt="Logo"
+                      width={40}
+                      height={40}
+                    />
                     <div>
-                      <span className="text-xl font-bold text-[#911828]">HAVA HARD TRADE</span>
-                      <p className="text-sm text-muted-foreground">Quincaillerie professionnelle</p>
+                      <span className="text-xl font-bold text-[#911828]">
+                        HAVA HARD TRADE
+                      </span>
+                      <p className="text-sm text-muted-foreground">
+                        Quincaillerie professionnelle
+                      </p>
                     </div>
                   </SheetTitle>
                 </SheetHeader>
@@ -338,7 +369,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
                     >
                       <Link href={href}>
                         <div className="flex-1">
-                          <span className="font-semibold text-base">{label}</span>
+                          <span className="font-semibold text-base">
+                            {label}
+                          </span>
                           <p className="text-sm text-muted-foreground">
                             {href === "/" && "Page d'accueil"}
                             {href === "/brands" && "Découvrez nos marques"}
@@ -361,7 +394,7 @@ const NavBar = ({ className, isHome = false }: Props) => {
                 <Image
                   src="/hava_logo.svg"
                   alt="HAVA HARD TRADE"
-                  width={140} 
+                  width={140}
                   height={45}
                   className="h-12 w-auto transform group-hover:scale-105 transition-all duration-300"
                 />
@@ -406,7 +439,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
                 aria-label="Ouvrir la recherche"
               >
                 <SearchIcon className="h-5 w-5 text-gray-400 group-hover:text-[#911828] transition-colors" />
-                <span className="text-gray-500 group-hover:text-gray-700 font-medium">Rechercher...</span>
+                <span className="text-gray-500 group-hover:text-gray-700 font-medium">
+                  Rechercher...
+                </span>
                 <kbd className="ml-2 hidden lg:inline-flex text-[10px] px-2 py-1 rounded-md border bg-gray-100 text-gray-500 group-hover:bg-[#911828]/10 group-hover:text-[#911828] transition-colors">
                   ⌘K
                 </kbd>
@@ -429,9 +464,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
 
       {/* Enhanced Command Palette Search */}
       {openSearch && (
-        <div 
-          className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300" 
-          onClick={() => setOpenSearch(false)} 
+        <div
+          className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
+          onClick={() => setOpenSearch(false)}
         />
       )}
       {openSearch && (
@@ -444,14 +479,18 @@ const NavBar = ({ className, isHome = false }: Props) => {
                   <SearchIcon className="h-4 w-4 text-[#911828]" />
                 </div>
                 <div>
-                  <span className="text-sm font-semibold text-gray-900">Recherche intelligente</span>
-                  <p className="text-xs text-gray-500">Trouvez rapidement vos produits</p>
+                  <span className="text-sm font-semibold text-gray-900">
+                    Recherche intelligente
+                  </span>
+                  <p className="text-xs text-gray-500">
+                    Trouvez rapidement vos produits
+                  </p>
                 </div>
               </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setOpenSearch(false)} 
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpenSearch(false)}
                 className="h-9 w-9 rounded-lg hover:bg-gray-100 transition-colors"
                 aria-label="Fermer"
               >
@@ -476,8 +515,12 @@ const NavBar = ({ className, isHome = false }: Props) => {
                         <div className="absolute inset-0 rounded-full border-2 border-[#911828]/20"></div>
                       </div>
                       <div className="text-center">
-                        <p className="text-gray-700 font-medium">Recherche en cours...</p>
-                        <p className="text-sm text-gray-500">Veuillez patienter</p>
+                        <p className="text-gray-700 font-medium">
+                          Recherche en cours...
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Veuillez patienter
+                        </p>
                       </div>
                     </div>
                   ) : searchQuery.trim() ? (
@@ -486,8 +529,13 @@ const NavBar = ({ className, isHome = false }: Props) => {
                         <div className="p-4 rounded-full bg-gray-100 mx-auto mb-4 w-fit">
                           <Package className="h-8 w-8 text-gray-400" />
                         </div>
-                        <p className="text-gray-700 font-semibold text-lg">Aucun résultat trouvé</p>
-                        <p className="text-gray-500 mt-1">Essayez avec d'autres mots-clés ou explorez nos catégories</p>
+                        <p className="text-gray-700 font-semibold text-lg">
+                          Aucun résultat trouvé
+                        </p>
+                        <p className="text-gray-500 mt-1">
+                          Essayez avec d'autres mots-clés ou explorez nos
+                          catégories
+                        </p>
                       </div>
                       <div className="flex gap-3">
                         <Button
@@ -513,11 +561,21 @@ const NavBar = ({ className, isHome = false }: Props) => {
                         <SearchIcon className="h-8 w-8 text-[#911828]" />
                       </div>
                       <div className="text-center">
-                        <p className="text-gray-700 font-semibold text-lg">Découvrez nos produits</p>
-                        <p className="text-gray-500 mt-1">Explorez notre gamme de quincaillerie professionnelle</p>
+                        <p className="text-gray-700 font-semibold text-lg">
+                          Découvrez nos produits
+                        </p>
+                        <p className="text-gray-500 mt-1">
+                          Explorez notre gamme de quincaillerie professionnelle
+                        </p>
                       </div>
                       <div className="flex flex-wrap gap-2 justify-center max-w-md">
-                        {["Serrures", "Cylindres", "Tesa", "Yale", "Quincaillerie"].map((tag) => (
+                        {[
+                          "Serrures",
+                          "Cylindres",
+                          "Tesa",
+                          "Yale",
+                          "Quincaillerie",
+                        ].map((tag) => (
                           <button
                             key={tag}
                             onClick={() => setSearchQuery(tag)}
@@ -535,164 +593,215 @@ const NavBar = ({ className, isHome = false }: Props) => {
                 {searchResults && !isSearching && (
                   <>
                     {/* Debug info */}
-                    {process.env.NODE_ENV === 'development' && (
+                    {process.env.NODE_ENV === "development" && (
                       <div className="px-4 py-2 text-xs text-gray-500 border-b bg-gray-50/50">
-                        Debug: Found {searchResults.products?.length || 0} products, {searchResults.brands?.length || 0} brands, {searchResults.categories?.length || 0} categories
+                        Debug: Found {searchResults.products?.length || 0}{" "}
+                        products, {searchResults.brands?.length || 0} brands,{" "}
+                        {searchResults.categories?.length || 0} categories
                       </div>
                     )}
-                    
+
                     {/* Show message if no results found */}
-                    {(!searchResults.products || searchResults.products.length === 0) && 
-                     (!searchResults.brands || searchResults.brands.length === 0) && 
-                     (!searchResults.categories || searchResults.categories.length === 0) && (
-                      <div className="p-6 text-center text-gray-500">
-                        <Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                        <p>Aucun résultat trouvé pour "{searchQuery}"</p>
-                      </div>
-                    )}
-                    
-                    {/* Products */}
-                    {searchResults.products && searchResults.products.length > 0 && (
-                      <CommandGroup heading={
-                        <div className="flex items-center gap-2 px-2 py-2">
-                          <Package className="h-4 w-4 text-[#911828]" />
-                          <span className="font-semibold text-gray-900">Produits</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {searchResults.products.length}
-                          </Badge>
+                    {(!searchResults.products ||
+                      searchResults.products.length === 0) &&
+                      (!searchResults.brands ||
+                        searchResults.brands.length === 0) &&
+                      (!searchResults.categories ||
+                        searchResults.categories.length === 0) && (
+                        <div className="p-6 text-center text-gray-500">
+                          <Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                          <p>Aucun résultat trouvé pour "{searchQuery}"</p>
                         </div>
-                      } className="px-2">
-                        {searchResults.products.map((product) => (
-                          <CommandItem
-                            key={product.id}
-                            onSelect={() => {
-                              setOpenSearch(false);
-                              router.push(`/products/${product.slug}`);
-                            }}
-                            className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
-                          >
-                            <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
+                      )}
+
+                    {/* Products */}
+                    {searchResults.products &&
+                      searchResults.products.length > 0 && (
+                        <CommandGroup
+                          heading={
+                            <div className="flex items-center gap-2 px-2 py-2">
                               <Package className="h-4 w-4 text-[#911828]" />
-                            </div>
-                            <div className="flex flex-col flex-1 ml-3">
-                              <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
-                                {product.name}
+                              <span className="font-semibold text-gray-900">
+                                Produits
                               </span>
-                              <div className="flex items-center gap-2 mt-1">
-                                {product.brand && (
-                                  <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-[#911828]/10 text-[#911828]">
-                                    {product.brand.name}
-                                  </Badge>
-                                )}
-                                {product.category && (
-                                  <span className="text-xs text-gray-500">{product.category.name}</span>
-                                )}
-                              </div>
+                              <Badge variant="secondary" className="text-xs">
+                                {searchResults.products.length}
+                              </Badge>
                             </div>
-                            <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    )}
+                          }
+                          className="px-2"
+                        >
+                          {searchResults.products.map((product) => (
+                            <CommandItem
+                              key={product.id}
+                              onSelect={() => {
+                                setOpenSearch(false);
+                                router.push(`/products/${product.slug}`);
+                              }}
+                              className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
+                            >
+                              <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
+                                <Package className="h-4 w-4 text-[#911828]" />
+                              </div>
+                              <div className="flex flex-col flex-1 ml-3">
+                                <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
+                                  {product.name}
+                                </span>
+                                <div className="flex items-center gap-2 mt-1">
+                                  {product.brand && (
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs px-2 py-0.5 bg-[#911828]/10 text-[#911828]"
+                                    >
+                                      {product.brand.name}
+                                    </Badge>
+                                  )}
+                                  {product.category && (
+                                    <span className="text-xs text-gray-500">
+                                      {product.category.name}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
 
                     {/* Brands */}
-                    {searchResults.brands && searchResults.brands.length > 0 && (
-                      <CommandGroup heading={
-                        <div className="flex items-center gap-2 px-2 py-2">
-                          <Tags className="h-4 w-4 text-[#911828]" />
-                          <span className="font-semibold text-gray-900">Marques</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {searchResults.brands.length}
-                          </Badge>
-                        </div>
-                      } className="px-2">
-                        {searchResults.brands.map((brand) => (
-                          <CommandItem
-                            key={brand.id}
-                            onSelect={() => {
-                              const searchUrl = createFilterURL({ brandId: brand.id });
-                              setOpenSearch(false);
-                              router.push(searchUrl);
-                            }}
-                            className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
-                          >
-                            <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
+                    {searchResults.brands &&
+                      searchResults.brands.length > 0 && (
+                        <CommandGroup
+                          heading={
+                            <div className="flex items-center gap-2 px-2 py-2">
                               <Tags className="h-4 w-4 text-[#911828]" />
-                            </div>
-                            <div className="flex flex-col flex-1 ml-3">
-                              <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
-                                {brand.name}
+                              <span className="font-semibold text-gray-900">
+                                Marques
                               </span>
-                              <span className="text-xs text-gray-500 mt-1">
-                                {brand._count?.products || 0} produit{(brand._count?.products || 0) !== 1 ? 's' : ''}
-                              </span>
+                              <Badge variant="secondary" className="text-xs">
+                                {searchResults.brands.length}
+                              </Badge>
                             </div>
-                            <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    )}
-
-                    {/* Categories */}
-                    {searchResults.categories && searchResults.categories.length > 0 && (
-                      <CommandGroup heading={
-                        <div className="flex items-center gap-2 px-2 py-2">
-                          <BookOpen className="h-4 w-4 text-[#911828]" />
-                          <span className="font-semibold text-gray-900">Catégories</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {searchResults.categories.length}
-                          </Badge>
-                        </div>
-                      } className="px-2">
-                        {searchResults.categories.map((category) => (
-                          <CommandItem
-                            key={category.id}
-                            onSelect={() => {
-                              const searchUrl = createFilterURL({
-                                categoryId: category.parent ? category.id : category.id,
-                                subcategoryId: category.parent ? category.id : undefined
-                              });
-                              setOpenSearch(false);
-                              router.push(searchUrl);
-                            }}
-                            className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
-                          >
-                            <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
-                              <BookOpen className="h-4 w-4 text-[#911828]" />
-                            </div>
-                            <div className="flex flex-col flex-1 ml-3">
-                              <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
-                                {category.name}
-                              </span>
-                              <div className="flex items-center gap-2 mt-1">
-                                {category.parent && (
-                                  <Badge variant="outline" className="text-xs px-2 py-0.5 border-[#911828]/20 text-[#911828]">
-                                    {category.parent.name}
-                                  </Badge>
-                                )}
-                                <span className="text-xs text-gray-500">
-                                  {category._count?.products || 0} produit{(category._count?.products || 0) !== 1 ? 's' : ''}
+                          }
+                          className="px-2"
+                        >
+                          {searchResults.brands.map((brand) => (
+                            <CommandItem
+                              key={brand.id}
+                              onSelect={() => {
+                                const searchUrl = createFilterURL({
+                                  brandId: brand.id,
+                                });
+                                setOpenSearch(false);
+                                router.push(searchUrl);
+                              }}
+                              className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
+                            >
+                              <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
+                                <Tags className="h-4 w-4 text-[#911828]" />
+                              </div>
+                              <div className="flex flex-col flex-1 ml-3">
+                                <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
+                                  {brand.name}
+                                </span>
+                                <span className="text-xs text-gray-500 mt-1">
+                                  {brand._count?.products || 0} produit
+                                  {(brand._count?.products || 0) !== 1
+                                    ? "s"
+                                    : ""}
                                 </span>
                               </div>
+                              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
+
+                    {/* Categories */}
+                    {searchResults.categories &&
+                      searchResults.categories.length > 0 && (
+                        <CommandGroup
+                          heading={
+                            <div className="flex items-center gap-2 px-2 py-2">
+                              <BookOpen className="h-4 w-4 text-[#911828]" />
+                              <span className="font-semibold text-gray-900">
+                                Catégories
+                              </span>
+                              <Badge variant="secondary" className="text-xs">
+                                {searchResults.categories.length}
+                              </Badge>
                             </div>
-                            <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    )}
+                          }
+                          className="px-2"
+                        >
+                          {searchResults.categories.map((category) => (
+                            <CommandItem
+                              key={category.id}
+                              onSelect={() => {
+                                const searchUrl = createFilterURL({
+                                  categoryId: category.parent
+                                    ? category.id
+                                    : category.id,
+                                  subcategoryId: category.parent
+                                    ? category.id
+                                    : undefined,
+                                });
+                                setOpenSearch(false);
+                                router.push(searchUrl);
+                              }}
+                              className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
+                            >
+                              <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
+                                <BookOpen className="h-4 w-4 text-[#911828]" />
+                              </div>
+                              <div className="flex flex-col flex-1 ml-3">
+                                <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
+                                  {category.name}
+                                </span>
+                                <div className="flex items-center gap-2 mt-1">
+                                  {category.parent && (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs px-2 py-0.5 border-[#911828]/20 text-[#911828]"
+                                    >
+                                      {category.parent.name}
+                                    </Badge>
+                                  )}
+                                  <span className="text-xs text-gray-500">
+                                    {category._count?.products || 0} produit
+                                    {(category._count?.products || 0) !== 1
+                                      ? "s"
+                                      : ""}
+                                  </span>
+                                </div>
+                              </div>
+                              <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
                   </>
                 )}
 
                 {/* Enhanced Quick Access */}
                 {(!searchQuery.trim() || (!searchResults && !isSearching)) && (
-                  <CommandGroup heading={
-                    <div className="flex items-center gap-2 px-2 py-2">
-                      <Sparkles className="h-4 w-4 text-[#911828]" />
-                      <span className="font-semibold text-gray-900">Accès rapide</span>
-                    </div>
-                  } className="px-2">
-                    <CommandItem 
-                      onSelect={() => { setOpenSearch(false); router.push("/products"); }}
+                  <CommandGroup
+                    heading={
+                      <div className="flex items-center gap-2 px-2 py-2">
+                        <Sparkles className="h-4 w-4 text-[#911828]" />
+                        <span className="font-semibold text-gray-900">
+                          Accès rapide
+                        </span>
+                      </div>
+                    }
+                    className="px-2"
+                  >
+                    <CommandItem
+                      onSelect={() => {
+                        setOpenSearch(false);
+                        router.push("/products");
+                      }}
                       className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
                     >
                       <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
@@ -702,12 +811,17 @@ const NavBar = ({ className, isHome = false }: Props) => {
                         <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
                           Tous les produits
                         </span>
-                        <span className="text-xs text-gray-500">Découvrir notre gamme complète</span>
+                        <span className="text-xs text-gray-500">
+                          Découvrir notre gamme complète
+                        </span>
                       </div>
                       <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
                     </CommandItem>
-                    <CommandItem 
-                      onSelect={() => { setOpenSearch(false); router.push("/brands"); }}
+                    <CommandItem
+                      onSelect={() => {
+                        setOpenSearch(false);
+                        router.push("/brands");
+                      }}
                       className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
                     >
                       <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
@@ -717,12 +831,17 @@ const NavBar = ({ className, isHome = false }: Props) => {
                         <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
                           Nos marques
                         </span>
-                        <span className="text-xs text-gray-500">Découvrir nos partenaires de confiance</span>
+                        <span className="text-xs text-gray-500">
+                          Découvrir nos partenaires de confiance
+                        </span>
                       </div>
                       <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
                     </CommandItem>
-                    <CommandItem 
-                      onSelect={() => { setOpenSearch(false); router.push("/#about"); }}
+                    <CommandItem
+                      onSelect={() => {
+                        setOpenSearch(false);
+                        router.push("/#about");
+                      }}
                       className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
                     >
                       <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
@@ -732,12 +851,17 @@ const NavBar = ({ className, isHome = false }: Props) => {
                         <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
                           À propos
                         </span>
-                        <span className="text-xs text-gray-500">Notre expertise en quincaillerie</span>
+                        <span className="text-xs text-gray-500">
+                          Notre expertise en quincaillerie
+                        </span>
                       </div>
                       <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
                     </CommandItem>
-                    <CommandItem 
-                      onSelect={() => { setOpenSearch(false); router.push("/#contact"); }}
+                    <CommandItem
+                      onSelect={() => {
+                        setOpenSearch(false);
+                        router.push("/#contact");
+                      }}
                       className="cursor-pointer px-4 py-4 rounded-xl hover:bg-[#911828]/5 transition-all duration-200 group"
                     >
                       <div className="p-2 rounded-lg bg-[#911828]/10 group-hover:bg-[#911828]/20 transition-colors">
@@ -747,7 +871,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
                         <span className="font-semibold text-gray-900 group-hover:text-[#911828] transition-colors">
                           Contact
                         </span>
-                        <span className="text-xs text-gray-500">Demander un devis ou informations</span>
+                        <span className="text-xs text-gray-500">
+                          Demander un devis ou informations
+                        </span>
                       </div>
                       <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#911828] group-hover:translate-x-1 transition-all" />
                     </CommandItem>
@@ -755,9 +881,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
                 )}
               </CommandList>
             </Command>
-            </div>
           </div>
-        )}
+        </div>
+      )}
     </header>
   );
 };
