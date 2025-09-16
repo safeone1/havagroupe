@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export const PerformanceMonitor = () => {
   useEffect(() => {
     // Only run in development or when explicitly enabled
-    if (process.env.NODE_ENV !== 'development' && !process.env.NEXT_PUBLIC_ENABLE_PERF_MONITOR) {
+    if (
+      process.env.NODE_ENV !== "development" &&
+      !process.env.NEXT_PUBLIC_ENABLE_PERF_MONITOR
+    ) {
       return;
     }
 
@@ -13,16 +16,25 @@ export const PerformanceMonitor = () => {
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         const metricName = entry.name;
-        const value = Math.round((entry as any).value || entry.duration);
-        
+        const value = Math.round(
+          (entry as PerformanceEntry & { value?: number }).value ||
+            entry.duration
+        );
+
         // Log performance metrics
         console.log(`🚀 ${metricName}: ${value}ms`);
-        
+
         // You can send these to analytics services
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-          (window as any).gtag('event', metricName, {
+        if (
+          typeof window !== "undefined" &&
+          (window as typeof window & { gtag?: unknown }).gtag
+        ) {
+          (
+            window as typeof window & { gtag: (...args: unknown[]) => void }
+          ).gtag("event", metricName, {
             value: value,
-            metric_id: (entry as any).id || entry.name,
+            metric_id:
+              (entry as PerformanceEntry & { id?: string }).id || entry.name,
           });
         }
       }
@@ -30,10 +42,12 @@ export const PerformanceMonitor = () => {
 
     // Observe various performance metrics
     try {
-      observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'] });
-    } catch (e) {
+      observer.observe({
+        entryTypes: ["largest-contentful-paint", "first-input", "layout-shift"],
+      });
+    } catch {
       // Browser doesn't support all metrics
-      console.log('Some performance metrics not supported');
+      console.log("Some performance metrics not supported");
     }
 
     // Monitor long tasks
@@ -44,17 +58,21 @@ export const PerformanceMonitor = () => {
     });
 
     try {
-      longTaskObserver.observe({ entryTypes: ['longtask'] });
-    } catch (e) {
+      longTaskObserver.observe({ entryTypes: ["longtask"] });
+    } catch {
       // Browser doesn't support long task monitoring
     }
 
     // Monitor memory usage if available
-    if ('memory' in performance) {
+    if ("memory" in performance) {
       const checkMemory = () => {
-        const memory = (performance as any).memory;
-        if (memory.usedJSHeapSize > memory.jsHeapSizeLimit * 0.9) {
-          console.warn('⚠️ High memory usage detected');
+        const memory = (
+          performance as Performance & {
+            memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number };
+          }
+        ).memory;
+        if (memory && memory.usedJSHeapSize > memory.jsHeapSizeLimit * 0.9) {
+          console.warn("⚠️ High memory usage detected");
         }
       };
 

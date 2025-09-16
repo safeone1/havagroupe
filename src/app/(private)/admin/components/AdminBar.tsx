@@ -8,8 +8,6 @@ import {
   Building2,
   Package,
   FolderOpen,
-  Users,
-  Settings,
   Home,
   Layers2,
   LogOut,
@@ -73,9 +71,10 @@ const AdminBar = () => {
         {navItems.map((item) => {
           const IconComponent = item.icon;
           // Special case for Dashboard - only active when exactly on /admin
-          const isActive = item.href === "/admin" 
-            ? pathname === "/admin"
-            : pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive =
+            item.href === "/admin"
+              ? pathname === "/admin"
+              : pathname === item.href || pathname.startsWith(item.href + "/");
 
           return (
             <Link

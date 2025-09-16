@@ -49,7 +49,7 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
     brandId: number;
     categoryId?: number | null;
     catalogueId?: number | null;
-    attributes?: any;
+    attributes?: Record<string, unknown> | null;
   } | null>(null);
   const resolvedParams = React.use(params);
   const id = parseInt(resolvedParams.id);
@@ -93,7 +93,10 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
           notFound();
         }
 
-        setCurrentProduct(productData);
+        setCurrentProduct({
+          ...productData,
+          attributes: productData.attributes as Record<string, unknown> | null,
+        });
         setBrands(brandsData);
         setCategories(categoriesData);
         setCatalogues(cataloguesData);
@@ -104,7 +107,9 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
           brandId: productData.brandId.toString(),
           categoryId: productData.categoryId?.toString() || "",
           catalogueId: productData.catalogueId?.toString() || "",
-          attributes: productData.attributes ? JSON.stringify(productData.attributes, null, 2) : "",
+          attributes: productData.attributes
+            ? JSON.stringify(productData.attributes, null, 2)
+            : "",
         });
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -126,20 +131,6 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
     } catch (err) {
       console.error("Error updating product:", err);
       toast.error("Failed to update product.");
-    }
-  };
-
-  const handleFileSelect = async (file: File) => {
-    try {
-      // Automatically upload and add the image
-      const formData = new FormData();
-      formData.append("file", file);
-      const imageUrl = await uploadFile(formData);
-
-      await handleAddImage(imageUrl);
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image.");
     }
   };
 
@@ -263,7 +254,8 @@ const EditProductPage = ({ params }: EditProductPageProps) => {
                 <p className="text-sm text-red-600">{errors.name.message}</p>
               )}
               <p className="text-xs text-gray-500">
-                The URL slug will be automatically regenerated from the product name
+                The URL slug will be automatically regenerated from the product
+                name
               </p>
             </div>
 

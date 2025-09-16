@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -37,10 +43,10 @@ export function ProductSearch({
   const [isFocused, setIsFocused] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  
+
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  
+
   // Debounce search input
   const debouncedSearch = useDebounce(search, 300);
 
@@ -59,112 +65,135 @@ export function ProductSearch({
   }, []);
 
   // Save search to history
-  const saveToHistory = useCallback((searchTerm: string) => {
-    if (!searchTerm.trim() || typeof window === "undefined") return;
-    
-    const newHistory = [
-      searchTerm,
-      ...recentSearches.filter(item => item !== searchTerm)
-    ].slice(0, 5);
-    
-    setRecentSearches(newHistory);
-    localStorage.setItem("productSearchHistory", JSON.stringify(newHistory));
-  }, [recentSearches]);
+  const saveToHistory = useCallback(
+    (searchTerm: string) => {
+      if (!searchTerm.trim() || typeof window === "undefined") return;
+
+      const newHistory = [
+        searchTerm,
+        ...recentSearches.filter((item) => item !== searchTerm),
+      ].slice(0, 5);
+
+      setRecentSearches(newHistory);
+      localStorage.setItem("productSearchHistory", JSON.stringify(newHistory));
+    },
+    [recentSearches]
+  );
 
   // Mock trending searches (in real app, this would come from API)
-  const trendingSearches = useMemo(() => [
-    { term: "door handles", count: 245 },
-    { term: "security locks", count: 189 },
-    { term: "window hardware", count: 156 },
-    { term: "hinges", count: 134 },
-  ], []);
+  const trendingSearches = useMemo(
+    () => [
+      { term: "door handles", count: 245 },
+      { term: "security locks", count: 189 },
+      { term: "window hardware", count: 156 },
+      { term: "hinges", count: 134 },
+    ],
+    []
+  );
 
   // Generate suggestions based on input and recent/trending searches
-  const generateSuggestions = useCallback((query: string) => {
-    if (!query.trim()) {
-      const suggestions: SearchSuggestion[] = [
-        ...recentSearches.slice(0, 3).map(term => ({
-          id: `recent-${term}`,
-          text: term,
-          type: "recent" as const,
-        })),
-        ...trendingSearches.slice(0, 3).map(item => ({
-          id: `trending-${item.term}`,
-          text: item.term,
-          type: "trending" as const,
-          count: item.count,
-        })),
+  const generateSuggestions = useCallback(
+    (query: string) => {
+      if (!query.trim()) {
+        const suggestions: SearchSuggestion[] = [
+          ...recentSearches.slice(0, 3).map((term) => ({
+            id: `recent-${term}`,
+            text: term,
+            type: "recent" as const,
+          })),
+          ...trendingSearches.slice(0, 3).map((item) => ({
+            id: `trending-${item.term}`,
+            text: item.term,
+            type: "trending" as const,
+            count: item.count,
+          })),
+        ];
+        return suggestions;
+      }
+
+      // Filter suggestions based on query
+      const filtered = [
+        ...recentSearches
+          .filter((term) => term.toLowerCase().includes(query.toLowerCase()))
+          .slice(0, 2)
+          .map((term) => ({
+            id: `recent-${term}`,
+            text: term,
+            type: "recent" as const,
+          })),
+        ...trendingSearches
+          .filter((item) =>
+            item.term.toLowerCase().includes(query.toLowerCase())
+          )
+          .slice(0, 3)
+          .map((item) => ({
+            id: `trending-${item.term}`,
+            text: item.term,
+            type: "trending" as const,
+            count: item.count,
+          })),
       ];
-      return suggestions;
-    }
 
-    // Filter suggestions based on query
-    const filtered = [
-      ...recentSearches
-        .filter(term => term.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, 2)
-        .map(term => ({
-          id: `recent-${term}`,
-          text: term,
-          type: "recent" as const,
-        })),
-      ...trendingSearches
-        .filter(item => item.term.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, 3)
-        .map(item => ({
-          id: `trending-${item.term}`,
-          text: item.term,
-          type: "trending" as const,
-          count: item.count,
-        })),
-    ];
-
-    return filtered;
-  }, [recentSearches, trendingSearches]);
+      return filtered;
+    },
+    [recentSearches, trendingSearches]
+  );
 
   // Handle search change with debouncing indication
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-    setIsTyping(true);
-    
-    // Update suggestions
-    setSuggestions(generateSuggestions(value));
-    
-    // Clear typing indicator after delay
-    setTimeout(() => setIsTyping(false), 500);
-  }, [generateSuggestions]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSearch(value);
+      setIsTyping(true);
+
+      // Update suggestions
+      setSuggestions(generateSuggestions(value));
+
+      // Clear typing indicator after delay
+      setTimeout(() => setIsTyping(false), 500);
+    },
+    [generateSuggestions]
+  );
 
   // Handle search submission
-  const handleSearchSubmit = useCallback((searchTerm?: string) => {
-    const finalTerm = searchTerm || search;
-    if (finalTerm.trim()) {
-      saveToHistory(finalTerm.trim());
-      setIsFocused(false);
-      inputRef.current?.blur();
-    }
-  }, [search, saveToHistory]);
-
-  // Handle suggestion click
-  const handleSuggestionClick = useCallback((suggestion: SearchSuggestion) => {
-    setSearch(suggestion.text);
-    handleSearchSubmit(suggestion.text);
-  }, [handleSearchSubmit]);
-
-  // Handle keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    switch (e.key) {
-      case "Escape":
-        setSearch("");
+  const handleSearchSubmit = useCallback(
+    (searchTerm?: string) => {
+      const finalTerm = searchTerm || search;
+      if (finalTerm.trim()) {
+        saveToHistory(finalTerm.trim());
         setIsFocused(false);
         inputRef.current?.blur();
-        break;
-      case "Enter":
-        e.preventDefault();
-        handleSearchSubmit();
-        break;
-    }
-  }, [handleSearchSubmit]);
+      }
+    },
+    [search, saveToHistory]
+  );
+
+  // Handle suggestion click
+  const handleSuggestionClick = useCallback(
+    (suggestion: SearchSuggestion) => {
+      setSearch(suggestion.text);
+      handleSearchSubmit(suggestion.text);
+    },
+    [handleSearchSubmit]
+  );
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      switch (e.key) {
+        case "Escape":
+          setSearch("");
+          setIsFocused(false);
+          inputRef.current?.blur();
+          break;
+        case "Enter":
+          e.preventDefault();
+          handleSearchSubmit();
+          break;
+      }
+    },
+    [handleSearchSubmit]
+  );
 
   // Handle click outside to close suggestions
   useEffect(() => {
@@ -207,7 +236,7 @@ export function ProductSearch({
       <div className="relative">
         {/* Search Icon */}
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        
+
         {/* Search Input */}
         <Input
           ref={inputRef}
@@ -260,7 +289,7 @@ export function ProductSearch({
           >
             <div className="p-2">
               {/* Recent Searches Header */}
-              {suggestions.some(s => s.type === "recent") && (
+              {suggestions.some((s) => s.type === "recent") && (
                 <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   Recent Searches
@@ -269,13 +298,14 @@ export function ProductSearch({
 
               {/* Recent Suggestions */}
               {suggestions
-                .filter(s => s.type === "recent")
-                .map(suggestion => (
+                .filter((s) => s.type === "recent")
+                .map((suggestion) => (
                   <button
                     key={suggestion.id}
                     onClick={() => handleSuggestionClick(suggestion)}
                     className="w-full text-left px-3 py-2 hover:bg-muted rounded-md transition-colors flex items-center gap-2"
                     role="option"
+                    aria-selected="false"
                   >
                     <Clock className="h-3 w-3 text-muted-foreground" />
                     <span className="text-sm">{suggestion.text}</span>
@@ -283,7 +313,7 @@ export function ProductSearch({
                 ))}
 
               {/* Trending Searches Header */}
-              {suggestions.some(s => s.type === "trending") && (
+              {suggestions.some((s) => s.type === "trending") && (
                 <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-1 mt-2">
                   <TrendingUp className="h-3 w-3" />
                   Trending Searches
@@ -292,13 +322,14 @@ export function ProductSearch({
 
               {/* Trending Suggestions */}
               {suggestions
-                .filter(s => s.type === "trending")
-                .map(suggestion => (
+                .filter((s) => s.type === "trending")
+                .map((suggestion) => (
                   <button
                     key={suggestion.id}
                     onClick={() => handleSuggestionClick(suggestion)}
                     className="w-full text-left px-3 py-2 hover:bg-muted rounded-md transition-colors flex items-center justify-between gap-2"
                     role="option"
+                    aria-selected="false"
                   >
                     <div className="flex items-center gap-2">
                       <TrendingUp className="h-3 w-3 text-muted-foreground" />
@@ -318,7 +349,7 @@ export function ProductSearch({
 
       {/* Search Status */}
       {debouncedSearch && (
-        <motion.div 
+        <motion.div
           className="mt-2 text-sm text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

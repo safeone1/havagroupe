@@ -20,12 +20,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema, LoginSchemaType } from "@/lib/Schema";
 import { CredsSignIn } from "@/lib/signIn";
-import { toast } from "sonner";
 import Image from "next/image";
 
 const Login = () => {
-  const [isPendingGithub, startGithubTransition] = useTransition();
-  const [isPendingGoogle, startGoogleTransition] = useTransition();
+  const [isPendingGithub] = useTransition();
+  const [isPendingGoogle] = useTransition();
   const {
     register,
     reset,

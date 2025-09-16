@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Select,
   SelectContent,
@@ -49,10 +49,16 @@ export function ProductFilters({ className }: ProductFiltersProps) {
 
   // Parse initial values from URL
   const initialFilters = useMemo(() => {
-    const brandId = searchParams.get("brand") ? parseInt(searchParams.get("brand")!) : undefined;
-    const categoryId = searchParams.get("category") ? parseInt(searchParams.get("category")!) : undefined;
-    const subcategoryId = searchParams.get("subcategory") ? parseInt(searchParams.get("subcategory")!) : undefined;
-    
+    const brandId = searchParams.get("brand")
+      ? parseInt(searchParams.get("brand")!)
+      : undefined;
+    const categoryId = searchParams.get("category")
+      ? parseInt(searchParams.get("category")!)
+      : undefined;
+    const subcategoryId = searchParams.get("subcategory")
+      ? parseInt(searchParams.get("subcategory")!)
+      : undefined;
+
     // If subcategory is selected, clear category to avoid conflicts
     return {
       brandId,
@@ -65,10 +71,16 @@ export function ProductFilters({ className }: ProductFiltersProps) {
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   // Sync local filter state with URL params when they change
   useEffect(() => {
-    const brandId = searchParams.get("brand") ? parseInt(searchParams.get("brand")!) : undefined;
-    const categoryId = searchParams.get("category") ? parseInt(searchParams.get("category")!) : undefined;
-    const subcategoryId = searchParams.get("subcategory") ? parseInt(searchParams.get("subcategory")!) : undefined;
-    
+    const brandId = searchParams.get("brand")
+      ? parseInt(searchParams.get("brand")!)
+      : undefined;
+    const categoryId = searchParams.get("category")
+      ? parseInt(searchParams.get("category")!)
+      : undefined;
+    const subcategoryId = searchParams.get("subcategory")
+      ? parseInt(searchParams.get("subcategory")!)
+      : undefined;
+
     // If subcategory is selected, clear category to avoid conflicts
     setFilters({
       brandId,
@@ -90,30 +102,9 @@ export function ProductFilters({ className }: ProductFiltersProps) {
   const debouncedFilters = useDebounce(filters, 300);
 
   // Memoized computed values
-  const activeFilters = useMemo(() => 
-    Boolean(filters.brandId || filters.categoryId || filters.subcategoryId),
-    [filters]
-  );
-
-  const isAnyLoading = useMemo(() => 
-    Object.values(loading).some(Boolean),
+  const isAnyLoading = useMemo(
+    () => Object.values(loading).some(Boolean),
     [loading]
-  );
-
-  // Selected items
-  const selectedBrand = useMemo(() => 
-    brands.find(b => b.id === filters.brandId), 
-    [brands, filters.brandId]
-  );
-  
-  const selectedCategory = useMemo(() => 
-    categories.find(c => c.id === filters.categoryId), 
-    [categories, filters.categoryId]
-  );
-  
-  const selectedSubcategory = useMemo(() => 
-    subcategories.find(s => s.id === filters.subcategoryId), 
-    [subcategories, filters.subcategoryId]
   );
 
   // Error handler with toast notification
@@ -126,7 +117,7 @@ export function ProductFilters({ className }: ProductFiltersProps) {
   // Data loading functions with error handling
   const loadInitialData = useCallback(async () => {
     try {
-      setLoading(prev => ({ ...prev, brands: true, categories: true }));
+      setLoading((prev) => ({ ...prev, brands: true, categories: true }));
       setError(null);
 
       const [brandsData, categoriesData] = await Promise.all([
@@ -139,98 +130,110 @@ export function ProductFilters({ className }: ProductFiltersProps) {
     } catch (error) {
       handleError(error, "load initial data");
     } finally {
-      setLoading(prev => ({ ...prev, brands: false, categories: false }));
+      setLoading((prev) => ({ ...prev, brands: false, categories: false }));
     }
   }, [handleError]);
 
-  const loadCategoriesByBrand = useCallback(async (brandId: number) => {
-    try {
-      setLoading(prev => ({ ...prev, categories: true }));
-      const categoriesData = await getCategoriesByBrand(brandId);
-      setCategories(categoriesData);
-    } catch (error) {
-      handleError(error, "load categories");
-    } finally {
-      setLoading(prev => ({ ...prev, categories: false }));
-    }
-  }, [handleError]);
+  const loadCategoriesByBrand = useCallback(
+    async (brandId: number) => {
+      try {
+        setLoading((prev) => ({ ...prev, categories: true }));
+        const categoriesData = await getCategoriesByBrand(brandId);
+        setCategories(categoriesData);
+      } catch (error) {
+        handleError(error, "load categories");
+      } finally {
+        setLoading((prev) => ({ ...prev, categories: false }));
+      }
+    },
+    [handleError]
+  );
 
-  const loadBrandsByCategory = useCallback(async (categoryId: number) => {
-    try {
-      setLoading(prev => ({ ...prev, brands: true }));
-      const brandsData = await getBrandsByCategory(categoryId);
-      setBrands(brandsData);
-    } catch (error) {
-      handleError(error, "load brands");
-    } finally {
-      setLoading(prev => ({ ...prev, brands: false }));
-    }
-  }, [handleError]);
+  const loadBrandsByCategory = useCallback(
+    async (categoryId: number) => {
+      try {
+        setLoading((prev) => ({ ...prev, brands: true }));
+        const brandsData = await getBrandsByCategory(categoryId);
+        setBrands(brandsData);
+      } catch (error) {
+        handleError(error, "load brands");
+      } finally {
+        setLoading((prev) => ({ ...prev, brands: false }));
+      }
+    },
+    [handleError]
+  );
 
-  const loadSubcategories = useCallback(async (categoryId: number, brandId?: number) => {
-    try {
-      setLoading(prev => ({ ...prev, subcategories: true }));
-      const subcategoriesData = await getSubcategoriesByCategory(categoryId, brandId);
-      setSubcategories(subcategoriesData);
-    } catch (error) {
-      handleError(error, "load subcategories");
-    } finally {
-      setLoading(prev => ({ ...prev, subcategories: false }));
-    }
-  }, [handleError]);
+  const loadSubcategories = useCallback(
+    async (categoryId: number, brandId?: number) => {
+      try {
+        setLoading((prev) => ({ ...prev, subcategories: true }));
+        const subcategoriesData = await getSubcategoriesByCategory(
+          categoryId,
+          brandId
+        );
+        setSubcategories(subcategoriesData);
+      } catch (error) {
+        handleError(error, "load subcategories");
+      } finally {
+        setLoading((prev) => ({ ...prev, subcategories: false }));
+      }
+    },
+    [handleError]
+  );
 
   // Filter change handlers
-  const handleBrandChange = useCallback((value: string) => {
-    const brandId = value === "all" ? undefined : parseInt(value);
-    setFilters(prev => ({
-      brandId,
-      categoryId: undefined,
-      subcategoryId: undefined,
-    }));
+  const handleBrandChange = useCallback(
+    (value: string) => {
+      const brandId = value === "all" ? undefined : parseInt(value);
+      setFilters({
+        brandId,
+        categoryId: undefined,
+        subcategoryId: undefined,
+      });
 
-    // Load related data
-    if (brandId) {
-      setCategories([]);
-      setSubcategories([]);
-      loadCategoriesByBrand(brandId);
-    } else {
-      setSubcategories([]);
-      loadInitialData();
-    }
-  }, [loadCategoriesByBrand, loadInitialData]);
-
-  const handleCategoryChange = useCallback((value: string) => {
-    const categoryId = value === "all" ? undefined : parseInt(value);
-    setFilters(prev => ({
-      ...prev,
-      categoryId,
-      subcategoryId: undefined, // Clear subcategory when category changes
-    }));
-
-    setSubcategories([]);
-    if (categoryId) {
-      loadSubcategories(categoryId, filters.brandId);
-      if (!filters.brandId) {
-        setBrands([]);
-        loadBrandsByCategory(categoryId);
+      // Load related data
+      if (brandId) {
+        setCategories([]);
+        setSubcategories([]);
+        loadCategoriesByBrand(brandId);
+      } else {
+        setSubcategories([]);
+        loadInitialData();
       }
-    }
-  }, [filters.brandId, loadSubcategories, loadBrandsByCategory]);
+    },
+    [loadCategoriesByBrand, loadInitialData]
+  );
+
+  const handleCategoryChange = useCallback(
+    (value: string) => {
+      const categoryId = value === "all" ? undefined : parseInt(value);
+      setFilters((prev) => ({
+        ...prev,
+        categoryId,
+        subcategoryId: undefined, // Clear subcategory when category changes
+      }));
+
+      setSubcategories([]);
+      if (categoryId) {
+        loadSubcategories(categoryId, filters.brandId);
+        if (!filters.brandId) {
+          setBrands([]);
+          loadBrandsByCategory(categoryId);
+        }
+      }
+    },
+    [filters.brandId, loadSubcategories, loadBrandsByCategory]
+  );
 
   const handleSubcategoryChange = useCallback((value: string) => {
     const subcategoryId = value === "all" ? undefined : parseInt(value);
-    setFilters(prev => ({ 
-      ...prev, 
+    setFilters((prev) => ({
+      ...prev,
       subcategoryId,
-      categoryId: subcategoryId ? undefined : prev.categoryId // Clear category when subcategory is selected
+      categoryId: subcategoryId ? undefined : prev.categoryId, // Clear category when subcategory is selected
     }));
   }, []);
-
-  const clearAllFilters = useCallback(() => {
-    setFilters({});
-    setSubcategories([]);
-    loadInitialData();
-  }, [loadInitialData]);
 
   const retryLoadData = useCallback(() => {
     setError(null);
@@ -246,13 +249,21 @@ export function ProductFilters({ className }: ProductFiltersProps) {
   useEffect(() => {
     // Skip if this is the initial mount to avoid unnecessary navigation
     const currentUrlFilters = {
-      brandId: searchParams.get("brand") ? parseInt(searchParams.get("brand")!) : undefined,
-      categoryId: searchParams.get("category") ? parseInt(searchParams.get("category")!) : undefined,
-      subcategoryId: searchParams.get("subcategory") ? parseInt(searchParams.get("subcategory")!) : undefined,
+      brandId: searchParams.get("brand")
+        ? parseInt(searchParams.get("brand")!)
+        : undefined,
+      categoryId: searchParams.get("category")
+        ? parseInt(searchParams.get("category")!)
+        : undefined,
+      subcategoryId: searchParams.get("subcategory")
+        ? parseInt(searchParams.get("subcategory")!)
+        : undefined,
     };
 
     // Only update URL if filters have actually changed from what's in the URL
-    if (JSON.stringify(debouncedFilters) !== JSON.stringify(currentUrlFilters)) {
+    if (
+      JSON.stringify(debouncedFilters) !== JSON.stringify(currentUrlFilters)
+    ) {
       const params = new URLSearchParams(searchParams.toString());
 
       // Update parameters
@@ -286,7 +297,13 @@ export function ProductFilters({ className }: ProductFiltersProps) {
   }, [debouncedFilters, searchParams, router]);
 
   // Filter item component
-  const FilterItem = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  const FilterItem = ({
+    label,
+    children,
+  }: {
+    label: string;
+    children: React.ReactNode;
+  }) => (
     <div className="space-y-2">
       <label className="text-sm font-medium text-foreground">{label}</label>
       {children}
@@ -294,12 +311,10 @@ export function ProductFilters({ className }: ProductFiltersProps) {
   );
 
   // Loading skeleton
-  const SelectSkeleton = () => (
-    <Skeleton className="h-10 w-full" />
-  );
+  const SelectSkeleton = () => <Skeleton className="h-10 w-full" />;
 
   return (
-    <motion.div 
+    <motion.div
       className={`space-y-6 ${className}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -320,7 +335,9 @@ export function ProductFilters({ className }: ProductFiltersProps) {
               onClick={retryLoadData}
               disabled={isAnyLoading}
             >
-              <RefreshCw className={`h-4 w-4 ${isAnyLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 ${isAnyLoading ? "animate-spin" : ""}`}
+              />
             </Button>
           </div>
         </motion.div>
@@ -342,7 +359,7 @@ export function ProductFilters({ className }: ProductFiltersProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Brands</SelectItem>
-                {brands.map(brand => (
+                {brands.map((brand) => (
                   <SelectItem key={brand.id} value={brand.id.toString()}>
                     {brand.name}
                   </SelectItem>
@@ -366,7 +383,7 @@ export function ProductFilters({ className }: ProductFiltersProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {categories.map(category => (
+                {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id.toString()}>
                     {category.name}
                   </SelectItem>
@@ -387,16 +404,21 @@ export function ProductFilters({ className }: ProductFiltersProps) {
               disabled={subcategories.length === 0}
             >
               <SelectTrigger>
-                <SelectValue placeholder={
-                  subcategories.length === 0 
-                    ? "No subcategories available" 
-                    : "Select subcategory..."
-                } />
+                <SelectValue
+                  placeholder={
+                    subcategories.length === 0
+                      ? "No subcategories available"
+                      : "Select subcategory..."
+                  }
+                />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Subcategories</SelectItem>
-                {subcategories.map(subcategory => (
-                  <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
+                {subcategories.map((subcategory) => (
+                  <SelectItem
+                    key={subcategory.id}
+                    value={subcategory.id.toString()}
+                  >
                     {subcategory.name}
                   </SelectItem>
                 ))}

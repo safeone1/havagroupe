@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Package, Tag, Folder, ArrowRight } from "lucide-react";
@@ -13,7 +12,10 @@ interface RelatedProductsSectionProps {
   className?: string;
 }
 
-export default function RelatedProductsSection({ products, className }: RelatedProductsSectionProps) {
+export default function RelatedProductsSection({
+  products,
+  className,
+}: RelatedProductsSectionProps) {
   if (products.length === 0) {
     return null;
   }
@@ -21,7 +23,9 @@ export default function RelatedProductsSection({ products, className }: RelatedP
   return (
     <section className={cn("space-y-6", className)}>
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-foreground">Produits similaires</h2>
+        <h2 className="text-2xl font-bold text-foreground">
+          Produits similaires
+        </h2>
         <Button variant="outline" asChild>
           <Link href="/products" className="gap-2">
             Voir tous les produits
@@ -29,7 +33,7 @@ export default function RelatedProductsSection({ products, className }: RelatedP
           </Link>
         </Button>
       </div>
-      
+
       <div className="flex flex-wrap justify-start gap-2">
         {products.map((product) => (
           <RelatedProductCard key={product.id} product={product} />
@@ -64,7 +68,7 @@ function RelatedProductCard({ product }: RelatedProductCardProps) {
               <Package className="h-6 w-6 text-muted-foreground" />
             </div>
           )}
-          
+
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 rounded-md" />
         </div>
@@ -79,14 +83,20 @@ function RelatedProductCard({ product }: RelatedProductCardProps) {
           {/* Brand and Category - More compact */}
           <div className="flex flex-wrap gap-1">
             {product.brand && (
-              <Badge variant="outline" className="text-[9px] gap-1 px-1 py-0.5 h-4">
+              <Badge
+                variant="outline"
+                className="text-[9px] gap-1 px-1 py-0.5 h-4"
+              >
                 <Tag className="h-2 w-2" />
                 {product.brand.name}
               </Badge>
             )}
-            
+
             {product.category && (
-              <Badge variant="secondary" className="text-[9px] gap-1 px-1 py-0.5 h-4">
+              <Badge
+                variant="secondary"
+                className="text-[9px] gap-1 px-1 py-0.5 h-4"
+              >
                 <Folder className="h-2 w-2" />
                 {product.category.name}
               </Badge>
@@ -97,4 +107,3 @@ function RelatedProductCard({ product }: RelatedProductCardProps) {
     </div>
   );
 }
-

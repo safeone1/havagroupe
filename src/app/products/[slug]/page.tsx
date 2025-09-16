@@ -195,7 +195,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
                         {/* Scrollable content */}
                         <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                          <ProductAttributes attributes={product.attributes} />
+                          <ProductAttributes
+                            attributes={
+                              (product.attributes as Record<string, unknown>) ||
+                              {}
+                            }
+                          />
                         </div>
                       </CardContent>
                     </Card>

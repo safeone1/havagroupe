@@ -4,12 +4,12 @@ import React, { useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  MoreHorizontal, 
-  ChevronsLeft, 
-  ChevronsRight 
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,46 +35,52 @@ export function Pagination({
   const searchParams = useSearchParams();
 
   // Memoized navigation function
-  const navigateToPage = useCallback((page: number) => {
-    if (page < 1 || page > totalPages || page === currentPage) return;
-    
-    const params = new URLSearchParams(searchParams.toString());
-    
-    if (page === 1) {
-      params.delete("page");
-    } else {
-      params.set("page", page.toString());
-    }
+  const navigateToPage = useCallback(
+    (page: number) => {
+      if (page < 1 || page > totalPages || page === currentPage) return;
 
-    const newURL = `/products?${params.toString()}`;
-    router.push(newURL, { scroll: false });
-  }, [currentPage, totalPages, searchParams, router]);
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (page === 1) {
+        params.delete("page");
+      } else {
+        params.set("page", page.toString());
+      }
+
+      const newURL = `/products?${params.toString()}`;
+      router.push(newURL, { scroll: false });
+    },
+    [currentPage, totalPages, searchParams, router]
+  );
 
   // Keyboard navigation handler
-  const handleKeyNavigation = useCallback((event: React.KeyboardEvent) => {
-    switch (event.key) {
-      case "ArrowLeft":
-        if (hasPreviousPage) {
+  const handleKeyNavigation = useCallback(
+    (event: React.KeyboardEvent) => {
+      switch (event.key) {
+        case "ArrowLeft":
+          if (hasPreviousPage) {
+            event.preventDefault();
+            navigateToPage(currentPage - 1);
+          }
+          break;
+        case "ArrowRight":
+          if (hasNextPage) {
+            event.preventDefault();
+            navigateToPage(currentPage + 1);
+          }
+          break;
+        case "Home":
           event.preventDefault();
-          navigateToPage(currentPage - 1);
-        }
-        break;
-      case "ArrowRight":
-        if (hasNextPage) {
+          navigateToPage(1);
+          break;
+        case "End":
           event.preventDefault();
-          navigateToPage(currentPage + 1);
-        }
-        break;
-      case "Home":
-        event.preventDefault();
-        navigateToPage(1);
-        break;
-      case "End":
-        event.preventDefault();
-        navigateToPage(totalPages);
-        break;
-    }
-  }, [currentPage, hasNextPage, hasPreviousPage, totalPages, navigateToPage]);
+          navigateToPage(totalPages);
+          break;
+      }
+    },
+    [currentPage, hasNextPage, hasPreviousPage, totalPages, navigateToPage]
+  );
 
   // Memoized page numbers generation
   const pageNumbers = useMemo(() => {
@@ -83,7 +89,7 @@ export function Pagination({
     const rangeWithDots = [];
 
     // For mobile, show fewer pages
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
     const actualDelta = isMobile ? 1 : delta;
 
     // Calculate start and end
@@ -163,12 +169,12 @@ export function Pagination({
 
         {/* Page numbers */}
         <div className="flex items-center space-x-1">
-          {pageNumbers.map((pageNumber, index) => {
+          {pageNumbers.map((pageNumber) => {
             // Handle ellipsis
             if (typeof pageNumber === "string") {
               return (
-                <div 
-                  key={pageNumber} 
+                <div
+                  key={pageNumber}
                   className="flex h-9 w-9 items-center justify-center"
                   aria-hidden="true"
                 >

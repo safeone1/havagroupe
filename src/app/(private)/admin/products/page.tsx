@@ -271,7 +271,12 @@ const ProductsPage = async () => {
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      <AttributesDisplay attributes={product.attributes} compact />
+                      <AttributesDisplay
+                        attributes={
+                          (product.attributes as Record<string, unknown>) || {}
+                        }
+                        compact
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {new Date(product.createdAt).toLocaleDateString()}

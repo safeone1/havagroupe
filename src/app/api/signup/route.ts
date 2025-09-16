@@ -15,7 +15,7 @@ export const POST = async (req: Request) => {
     });
 
     return NextResponse.json(await res.json(), { status: res.status });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to sign up" }, { status: 500 });
   }
 };

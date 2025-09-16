@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -10,25 +10,18 @@ import {
   Menu,
   Phone,
   Mail,
-  ChevronDown,
   ChevronRight,
-  Store,
   Package,
   Tags,
   BookOpen,
-  MapPin,
   PhoneCall,
   Quote,
   X,
-  Globe,
   Loader2,
   ArrowRight,
   Sparkles,
-  Info,
-  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -63,7 +56,6 @@ interface Props {
 const NavBar = ({ className, isHome = false }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
-  const id = useId();
   const [openSearch, setOpenSearch] = useState(false);
   const [openMobile, setOpenMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -218,7 +210,7 @@ const NavBar = ({ className, isHome = false }: Props) => {
     return pathname === linkHref;
   };
 
-  const createFilterURL = (params: Record<string, any>) => {
+  const createFilterURL = (params: Record<string, unknown>) => {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
@@ -533,7 +525,7 @@ const NavBar = ({ className, isHome = false }: Props) => {
                           Aucun résultat trouvé
                         </p>
                         <p className="text-gray-500 mt-1">
-                          Essayez avec d'autres mots-clés ou explorez nos
+                          Essayez avec d&apos;autres mots-clés ou explorez nos
                           catégories
                         </p>
                       </div>
@@ -543,7 +535,7 @@ const NavBar = ({ className, isHome = false }: Props) => {
                           onClick={() => handleSearch(searchQuery)}
                           className="bg-[#911828] hover:bg-[#911828]/90 text-white px-6"
                         >
-                          Rechercher "{searchQuery}"
+                          Rechercher &quot;{searchQuery}&quot;
                         </Button>
                         <Button
                           variant="outline"
@@ -610,7 +602,9 @@ const NavBar = ({ className, isHome = false }: Props) => {
                         searchResults.categories.length === 0) && (
                         <div className="p-6 text-center text-gray-500">
                           <Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                          <p>Aucun résultat trouvé pour "{searchQuery}"</p>
+                          <p>
+                            Aucun résultat trouvé pour &quot;{searchQuery}&quot;
+                          </p>
                         </div>
                       )}
 

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 interface AttributesDisplayProps {
-  attributes: any;
+  attributes: Record<string, unknown>;
   compact?: boolean;
 }
 
@@ -16,10 +16,12 @@ const AttributesDisplay: React.FC<AttributesDisplayProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  if (!attributes || typeof attributes !== 'object' || Object.keys(attributes).length === 0) {
-    return (
-      <span className="text-gray-400 text-sm italic">No attributes</span>
-    );
+  if (
+    !attributes ||
+    typeof attributes !== "object" ||
+    Object.keys(attributes).length === 0
+  ) {
+    return <span className="text-gray-400 text-sm italic">No attributes</span>;
   }
 
   const attributeEntries = Object.entries(attributes);
@@ -41,8 +43,8 @@ const AttributesDisplay: React.FC<AttributesDisplayProps> = ({
             onClick={() => setIsExpanded(true)}
             className="h-6 px-2 text-xs text-blue-600 hover:text-blue-800"
           >
-            <ChevronRight size={12} className="mr-1" />
-            +{attributeEntries.length - displayCount} more
+            <ChevronRight size={12} className="mr-1" />+
+            {attributeEntries.length - displayCount} more
           </Button>
         )}
       </div>
@@ -64,13 +66,15 @@ const AttributesDisplay: React.FC<AttributesDisplayProps> = ({
           </Button>
         </div>
       )}
-      
+
       <div className="grid grid-cols-1 gap-1">
         {attributeEntries.map(([key, value]) => (
           <div key={key} className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-600">{key}:</span>
             <Badge variant="outline" className="text-xs">
-              {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+              {typeof value === "object"
+                ? JSON.stringify(value)
+                : String(value)}
             </Badge>
           </div>
         ))}

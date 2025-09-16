@@ -2,13 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ExternalLink, 
-  Download, 
-  FileText, 
-  Eye,
-  AlertCircle 
-} from "lucide-react";
+import { Download, FileText, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type Catalogue } from "@/generated/prisma";
 
@@ -17,13 +11,16 @@ interface CatalogueSectionProps {
   className?: string;
 }
 
-export default function CatalogueSection({ catalogue, className }: CatalogueSectionProps) {
+export default function CatalogueSection({
+  catalogue,
+  className,
+}: CatalogueSectionProps) {
   if (!catalogue) {
     return null;
   }
 
-  const isPdfFile = catalogue.fileUrl?.toLowerCase().endsWith('.pdf');
-  const fileName = catalogue.fileUrl?.split('/').pop() || 'catalogue';
+  const isPdfFile = catalogue.fileUrl?.toLowerCase().endsWith(".pdf");
+  const fileName = catalogue.fileUrl?.split("/").pop() || "catalogue";
 
   return (
     <section className={cn("mb-12", className)}>
@@ -34,7 +31,9 @@ export default function CatalogueSection({ catalogue, className }: CatalogueSect
               <FileText className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-lg text-foreground">Catalogue</h3>
+              <h3 className="font-semibold text-lg text-foreground">
+                Catalogue
+              </h3>
               {catalogue.brand && (
                 <p className="text-sm text-muted-foreground">
                   Catalogue {catalogue.brand.name}
@@ -42,22 +41,26 @@ export default function CatalogueSection({ catalogue, className }: CatalogueSect
               )}
             </div>
           </div>
-          
+
           <div className="space-y-4">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Titre du catalogue</p>
-              <p className="font-medium text-lg text-foreground">{catalogue.title}</p>
+              <p className="text-sm text-muted-foreground mb-1">
+                Titre du catalogue
+              </p>
+              <p className="font-medium text-lg text-foreground">
+                {catalogue.title}
+              </p>
             </div>
-            
+
             {catalogue.fileUrl && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <p className="text-sm text-muted-foreground">Document</p>
                   <Badge variant="outline" className="text-xs">
-                    {isPdfFile ? 'PDF' : 'Fichier'}
+                    {isPdfFile ? "PDF" : "Fichier"}
                   </Badge>
                 </div>
-                
+
                 {/* PDF Preview for modern browsers */}
                 {isPdfFile && (
                   <div className="border rounded-lg overflow-hidden bg-muted">
@@ -69,7 +72,7 @@ export default function CatalogueSection({ catalogue, className }: CatalogueSect
                         onError={(e) => {
                           // Fallback if iframe doesn't work
                           const target = e.target as HTMLElement;
-                          target.style.display = 'none';
+                          target.style.display = "none";
                           const parent = target.parentElement;
                           if (parent) {
                             parent.innerHTML = `
@@ -87,7 +90,7 @@ export default function CatalogueSection({ catalogue, className }: CatalogueSect
                     </div>
                   </div>
                 )}
-                
+
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild className="flex-1 gap-2">
@@ -101,7 +104,7 @@ export default function CatalogueSection({ catalogue, className }: CatalogueSect
                       Ouvrir le catalogue
                     </a>
                   </Button>
-                  
+
                   <Button variant="outline" asChild className="flex-1 gap-2">
                     <a
                       href={catalogue.fileUrl}
@@ -117,7 +120,7 @@ export default function CatalogueSection({ catalogue, className }: CatalogueSect
                 {/* File Info */}
                 <div className="text-xs text-muted-foreground space-y-1">
                   <p>Fichier: {fileName}</p>
-                  <p>Format: {isPdfFile ? 'PDF' : 'Document'}</p>
+                  <p>Format: {isPdfFile ? "PDF" : "Document"}</p>
                 </div>
               </div>
             )}
@@ -127,4 +130,3 @@ export default function CatalogueSection({ catalogue, className }: CatalogueSect
     </section>
   );
 }
-
